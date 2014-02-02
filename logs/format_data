@@ -1,0 +1,28 @@
+#! /usr/bin/ruby
+
+def format_data(data)
+    data.each_with_index.map do |individuals, i|
+        individuals.sort!
+
+        min = individuals.first
+        max = individuals.last
+        med = (individuals[(individuals.length - 1) * 0.5] + individuals[individuals.length * 0.5]) / 2.0
+        q_1 = (individuals[(individuals.length - 1) * 0.25] + individuals[individuals.length * 0.25]) / 2.0
+        q_2 = (individuals[(individuals.length - 1) * 0.75] + individuals[individuals.length * 0.75]) / 2.0
+
+        [i + 1, min, q_1, med, q_2, max]
+    end.map { |l| l.join("\t") }.join("\n")
+end
+
+files = Dir[File.join(File.dirname(__FILE__), "*/fitness.dat")]
+
+files.each do |file|
+    formatted_data_file = File.join(File.dirname(file), "formatted_data.dat")
+
+    unless File.exists?(formatted_data_file)
+        data = File.read(file).split("\n").map { |line| line.split("\t").map(&:to_i)}
+
+        File.write(formatted_data_file, format_data(data))
+    end
+end
+

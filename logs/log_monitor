@@ -1,0 +1,294 @@
+#! /usr/bin/node
+
+var Inotify         = require('inotify').Inotify,
+    WebSocketServer = require('websocket').server,
+    fs              = require('fs'),
+    _               = require('underscore'),
+    sleep           = require('sleep'),
+    server          = require('http').createServer(function (request, response) { return; }),
+    connections     = {},
+    blocks          = [],
+    data_sent       = 0;
+
+/*
+ * States are defined as the following.
+ *
+ * 0 = Waiting for a log directory to become present.
+ * 1 = Log directory has become present, waiting for log file.
+ * 2 = Log file is present, watching and pushing changes.
+ * 3 = Log file is closed, but data is still waiting to get pushed.
+ *
+ */
+var state = 0,
+    ongoing_stats = 0,
+    ongoing_opens = 0,
+    ongoing_reads = 0,
+    events_received = 0;
+
+var log_directory,
+    problem_file,
+    data_file,
+    solution_file;
+
+server.listen(1338, function () { return; });
+wsServer = new WebSocketServer({ httpServer: server });
+
+wsServer.on('request', function (request) {
+    var client_id  = request.socket._peername.address + ':' + request.socket._peername.port,
+        connection = request.accept(null, request.origin);
+
+    console.log('Connection request from ' + client_id + '..');
+
+    connections[client_id] = connection;
+    connection.on('close', function (reasonCode, description) {
+        console.log(client_id + ' closed connection!');
+        delete (connections[client_id]);
+    });
+});
+
+/*
+ * This watches for creation of new log directories.
+ *
+ */
+(new Inotify()).addWatch({
+    path: './',
+    watch_for: Inotify.IN_CREATE,
+    callback: function (event) {
+        if (state === 0) {
+            state = 1;
+
+            log_directory = './' + event.name;
+            data_file = log_directory + '/fitness.dat';
+            solution_file = log_directory + '/solution.dat';
+
+            console.log(log_directory + ' has been created, watching..');
+            push_action('setup');
+
+            while (!fs.existsSync(data_file)) {
+                console.log('Waiting for ' + data_file + ' to become present..');
+                sleep.sleep(0.5);
+            }
+
+            state = 2;
+
+            watch_log_file(data_file);
+        }
+    }
+});
+
+/*
+ * This watches the solution file for closing,
+ *
+ */
+function wait_for_solution_file () {
+    while (!fs.existsSync(solution_file)) {
+        console.log('Waiting for ' + solution_file + ' to become present..');
+        sleep.sleep(0.5);
+    }
+
+    fs.readFile(solution_file, function (error, data) {
+        if (error) {
+            console.log('An error occured while reading the solution!');
+        } else {
+            push_action('solution', data.toString());
+
+            teardown();
+        }
+    });
+}
+
+
+/*
+ * This watches the log file for modification and closing,
+ *
+ */
+function watch_log_file (file) {
+    (new Inotify()).addWatch({
+        path: file,
+        watch_for: Inotify.IN_MODIFY | Inotify.IN_CLOSE_WRITE,
+        callback: function (event) {
+            if (state === 2) {
+                events_received++;
+
+                console.log('Received event from ' + file + ' (event #' + events_received + ')..');
+
+                if (event.mask & Inotify.IN_CLOSE_WRITE) {
+                    state = 3;
+                }
+
+                read_arrived_data(file, events_received, process_incoming_data);
+            }
+        }
+    });
+}
+
+/*
+ * This processes incomming notification of file changes.
+ *
+ */
+function read_arrived_data (file, event_id, data_arrival_callback) {
+    console.log('Statting file.. (event #' + event_id + ')..');
+    ongoing_stats++;
+    fs.stat(file, function (error, stats) {
+        ongoing_stats--;
+        if (error) {
+            console.log('An error occured while reading file stats!');
+        } else {
+            var offset = bytes_scheduled_to_read();
+
+            if (offset < stats.size) {
+                console.log('Creating a block of (' + offset + ', ' + (stats.size) + ') (event #' + event_id + ')..');
+
+                blocks.push({
+                    offset: offset,
+                    size: stats.size - offset,
+                    state: 0
+                });
+
+                process_block(blocks[blocks.length - 1], file, event_id, data_arrival_callback);
+            } else if (done_reading()) {
+                wait_for_solution_file();
+            }
+        }
+    });
+}
+
+function bytes_scheduled_to_read () {
+    var bytes = 0;
+
+    for (var i = 0; i < blocks.length; i++) {
+        bytes += blocks[i].size;
+    }
+
+    return bytes;
+}
+
+function process_block (block, file, event_id, data_arrival_callback) {
+    console.log('Opening file.. (event #' + event_id + ')..');
+    ongoing_opens++;
+    fs.open(file, 'r', function (error, fd) {
+        ongoing_opens--;
+        if (error) {
+            console.log('An error occured while reading file content! (event #' + event_id + ')..');
+        } else {
+            console.log('Reading file.. (event #' + event_id + ')..');
+
+            var buffer = new Buffer(block.size);
+
+            ongoing_reads++;
+            fs.read(fd, buffer, 0, block.size, block.offset, function (error, bytesRead, buffer) {
+                ongoing_reads--;
+                if (error) {
+                    console.log('An error occured while reading file content! (event #' + event_id + ')..');
+                    block.state = 2;
+                } else {
+                    block.state = 1;
+                    block.data = buffer.toString();
+
+                    data_arrival_callback(event_id);
+                }
+
+                fs.close(fd);
+            });
+        }
+    });
+}
+
+function process_incoming_data (event_id) {
+    var data_not_sent = data_read().slice(data_sent);
+
+    if (data_not_sent.length > 0 && data_not_sent.indexOf("\n") !== -1) {
+        console.log('Sending data.. (event #' + event_id + ')..');
+
+        var data_to_send = data_not_sent.slice(0, data_not_sent.lastIndexOf("\n"));
+
+        data_sent += data_to_send.length;
+        push_action('render', format_data(data_to_send));
+
+        if (done_reading()) {
+            wait_for_solution_file();
+        }
+    } else {
+        console.log('No data to send.. (event #' + event_id + ')..');
+    }
+}
+
+function data_read () {
+    var buffer = '';
+
+    for (var i = 0; i < blocks.length; i++) {
+        if (blocks[i].state == 1) {
+            buffer += blocks[i].data;
+        } else {
+            break;
+        }
+    }
+
+    return buffer;
+}
+
+function done_reading () {
+    for (var i = 0; i < blocks.length; i++) {
+        if (blocks[i].state == 0) {
+            return false;
+        }
+    }
+
+    return state == 3 && ongoing_stats == 0 && ongoing_opens == 0 && ongoing_reads == 0;
+}
+
+function teardown (event_id) {
+    console.log('Tearing down!');
+    push_action('teardown');
+
+    state = 0;
+    blocks = [];
+    data_sent = 0;
+    events_received = 0;
+}
+
+function format_data (data) {
+    if (data.slice(0, 1) == "\n") {
+        data = data.slice(1);
+    }
+
+    if (data.slice(-1) == "\n") {
+        data = data.slice(0, -1);
+    }
+
+    data = data.split("\n");
+
+    data = _.map(data, function (data) {
+        return _.filter(_.map(data.split("\t"), function (data) {
+            return parseInt(data);
+        }), function (data) {
+            return !isNaN(data);
+        });
+    });
+
+    return _.map(data, function (data) {
+        return {
+            min: _.min(data),
+            avg: _.reduce(data, function(memo, num){ return memo + num; }, 0) / data.length,
+            max: _.max(data)
+        };
+    });
+}
+
+function push_action (action, data) {
+    var payload = {
+        action: action
+    };
+
+    if (data) {
+        payload.data = data;
+    }
+
+    console.log(payload);
+
+    var clients = Object.keys(connections);
+
+    for (var i = 0; i < clients.length; i++) {
+        connections[clients[i]].sendUTF(JSON.stringify(payload));
+    }
+}

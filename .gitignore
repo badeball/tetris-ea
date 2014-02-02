@@ -1,0 +1,11 @@
+# Binaries created by make
+code/bin/*
+
+# Object files created by make
+code/src/obj/*
+
+# Log folders
+logs/*/
+
+# Scientific papers
+papers/
