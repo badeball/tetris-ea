@@ -29,6 +29,7 @@ struct options {
     int board_width;
     int board_height;
     int print_board;
+    int n_piece_lookahead;
 
     float mutation_rate;
     float crossover_rate;

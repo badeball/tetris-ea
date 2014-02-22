@@ -33,6 +33,7 @@ struct options opt = {
     .board_width           = 10,
     .board_height          = 20,
     .print_board           = 0,
+    .n_piece_lookahead     = 0,
 
     .mutation_rate                     = 0.995,
     .crossover_rate                    = 0.5,
@@ -80,6 +81,11 @@ void print_help_text () {
         "                      average fitness score of an individual.\n"
         "  --board-width N (defaults to 10)\n"
         "  --board-height N (defaults to 20)\n"
+        "  --n-piece-lookahead N (defaults to 0)\n"
+        "                      The number of tetrominos that the controller will see\n"
+        "                      ahead of the current tetromino. Higher means that the\n"
+        "                      controller can take more informed choices, but it will\n"
+        "                      result in significantly higher computation times.\n"
         "  --multi-threading   calculate fitness values in parallel by multi-threading\n"
         "  -l or --log-dir     specify the location for run logs\n"
         "  --no-log            do not log results (-i or --no-log needs to be defined)\n"
@@ -147,6 +153,8 @@ int main (int argc, char **argv) {
             opt.board_width = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--board-height") == 0) {
             opt.board_height = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--n-piece-lookahead") == 0) {
+            opt.n_piece_lookahead = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--elitism") == 0) {
             opt.elitism = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--multi-threading") == 0) {
