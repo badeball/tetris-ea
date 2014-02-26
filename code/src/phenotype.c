@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "genotype.h"
 #include "options.h"
@@ -39,8 +40,19 @@ int compare_phenotypes (const void * p_1, const void * p_2) {
 }
 
 void write_phenotype (FILE * stream, struct phenotype * phenotype, struct options * opt) {
+    int max_feature_length = 0;
+
     for (int i = 0; i < opt->n_features_enabled; i++) {
-        fprintf(stream, "%s % 2.f\n", feature_name(opt->enabled_f_indices[i]), phenotype->genotype->feature_weights[i]);
+        if (strlen(feature_name(opt->enabled_f_indices[i])) > max_feature_length) {
+            max_feature_length = strlen(feature_name(opt->enabled_f_indices[i]));
+        }
+    }
+
+    for (int i = 0; i < opt->n_features_enabled; i++) {
+        fprintf(stream, "%-*s % .2f\n",
+            max_feature_length,
+            feature_name(opt->enabled_f_indices[i]),
+            phenotype->genotype->feature_weights[i]);
     }
 }
 
