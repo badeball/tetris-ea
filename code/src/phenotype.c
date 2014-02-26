@@ -208,11 +208,9 @@ int continue_board(struct board * board, struct phenotype* phenotype, int next_t
         free(f.alternatives);
         return 1;
     } else {
-        struct alternative max_alt = {
-            .score = INT_MIN,
-        };
+        struct alternative max_alt = f.alternatives[0];
 
-        for (int i = 0; i < f.size; i++) {
+        for (int i = 1; i < f.size; i++) {
             if (f.alternatives[i].score > max_alt.score) {
                 max_alt = f.alternatives[i];
             }
