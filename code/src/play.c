@@ -63,7 +63,7 @@ int main (int argc, char **argv) {
             opt.print_board = 1;
         } else if (index_feature(argv[i]) >= 0) {
             enable_feature(index_feature(argv[i]), &opt);
-            phenotype->genotype->feature_weights[opt.n_features_enabled - 1] = atoi(argv[++i]);
+            phenotype->genotype->feature_weights[opt.n_features_enabled - 1] = atof(argv[++i]);
         } else {
             printf("Unknown argument '%s'.\n", argv[i]);
             return 1;

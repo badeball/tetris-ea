@@ -5,7 +5,7 @@
 #include "options.h"
 
 struct genotype {
-    int * feature_weights;
+    float * feature_weights;
 };
 
 void free_genotype (struct genotype* g);

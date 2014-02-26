@@ -40,12 +40,12 @@ int compare_phenotypes (const void * p_1, const void * p_2) {
 
 void write_phenotype (FILE * stream, struct phenotype * phenotype, struct options * opt) {
     for (int i = 0; i < opt->n_features_enabled; i++) {
-        fprintf(stream, "%s %d\n", feature_name(opt->enabled_f_indices[i]), phenotype->genotype->feature_weights[i]);
+        fprintf(stream, "%s % 2.f\n", feature_name(opt->enabled_f_indices[i]), phenotype->genotype->feature_weights[i]);
     }
 }
 
-int board_score (struct board * board, struct phenotype * phenotype, struct t_placement * last_t_placement, struct options * opt) {
-    int score = 0;
+float board_score (struct board * board, struct phenotype * phenotype, struct t_placement * last_t_placement, struct options * opt) {
+    float score = 0;
 
     for (int i = 0; i < opt->n_features_enabled; i++) {
         score += phenotype->genotype->feature_weights[i] * (* feature_function(opt->enabled_f_indices[i])) (board, last_t_placement);
@@ -94,7 +94,7 @@ int phenotype_fitness (struct phenotype * phenotype, struct options* opt) {
 }
 
 int average_phenotype_fitness (struct phenotype * phenotype, struct options* opt) {
-    int sum = 0;
+    float sum = 0;
 
     for (int i = 0; i < opt->n_trials; i++) {
         sum += phenotype_fitness(phenotype, opt);
@@ -106,7 +106,7 @@ int average_phenotype_fitness (struct phenotype * phenotype, struct options* opt
 struct alternative {
     int position_i;
     int rotation_i;
-    int score;
+    float score;
 };
 
 struct future {

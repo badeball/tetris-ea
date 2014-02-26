@@ -82,7 +82,7 @@ char * feature_name (int feature_i) {
     }
 }
 
-int (* feature_function(int feature_i)) (struct board * board, struct t_placement * last_t_placement) {
+float (* feature_function(int feature_i)) (struct board * board, struct t_placement * last_t_placement) {
     switch (feature_i) {
     case 0:
         return &f_max_height;
@@ -139,7 +139,7 @@ int column_height (struct board * board, int column) {
     return 0;
 }
 
-int f_max_height (struct board * board, struct t_placement * last_t_placement) {
+float f_max_height (struct board * board, struct t_placement * last_t_placement) {
     for (int y = 0; y < board->height; y++) {
         for (int x = 0; x < board->width; x++) {
             if (*address_tile(x, y, board) == 1) {
@@ -151,7 +151,7 @@ int f_max_height (struct board * board, struct t_placement * last_t_placement) {
     return 0;
 }
 
-int f_n_holes (struct board * board, struct t_placement * last_t_placement) {
+float f_n_holes (struct board * board, struct t_placement * last_t_placement) {
     int n_holes = 0;
 
     for (int x = 0; x < board->width; x++) {
@@ -171,11 +171,11 @@ int f_n_holes (struct board * board, struct t_placement * last_t_placement) {
     return n_holes;
 }
 
-int f_landing_height (struct board * board, struct t_placement * last_t_placement) {
+float f_landing_height (struct board * board, struct t_placement * last_t_placement) {
     return board->height - last_t_placement->y - 4 + last_t_placement->tetromino->p_bottom;
 }
 
-int f_removed_lines (struct board * board, struct t_placement * last_t_placement) {
+float f_removed_lines (struct board * board, struct t_placement * last_t_placement) {
     int lines_removed = 0;
 
     for (int y = 0; y < board->height; y++) {
@@ -191,7 +191,7 @@ int f_removed_lines (struct board * board, struct t_placement * last_t_placement
     return lines_removed;
 }
 
-int f_weighted_blocks (struct board * board, struct t_placement * last_t_placement) {
+float f_weighted_blocks (struct board * board, struct t_placement * last_t_placement) {
     int weighted_blocks = 0;
 
     for (int y = 0; y < board->height; y++) {
@@ -205,7 +205,7 @@ int f_weighted_blocks (struct board * board, struct t_placement * last_t_placeme
     return weighted_blocks;
 }
 
-int f_well_sum (struct board * board, struct t_placement * last_t_placement) {
+float f_well_sum (struct board * board, struct t_placement * last_t_placement) {
     int well_sum = 0;
 
     well_sum += max(0, column_height(board, 1) - column_height(board, 0));
@@ -224,7 +224,7 @@ int f_well_sum (struct board * board, struct t_placement * last_t_placement) {
     return well_sum;
 }
 
-int f_n_blocks (struct board * board, struct t_placement * last_t_placement) {
+float f_n_blocks (struct board * board, struct t_placement * last_t_placement) {
     int n_blocks = 0;
 
     for (int y = 0; y < board->height; y++) {
@@ -238,7 +238,7 @@ int f_n_blocks (struct board * board, struct t_placement * last_t_placement) {
     return n_blocks;
 }
 
-int f_eroded_piece_cells (struct board * board, struct t_placement * last_t_placement) {
+float f_eroded_piece_cells (struct board * board, struct t_placement * last_t_placement) {
     int lines_removed = 0,
         eroded_cells = 0;
 
@@ -262,7 +262,7 @@ int f_eroded_piece_cells (struct board * board, struct t_placement * last_t_plac
     return lines_removed * eroded_cells;
 }
 
-int f_row_transitions (struct board * board, struct t_placement * last_t_placement) {
+float f_row_transitions (struct board * board, struct t_placement * last_t_placement) {
     int row_transitions = 0;
 
     for (int y = 0; y < board->height; y++) {
@@ -285,7 +285,7 @@ int f_row_transitions (struct board * board, struct t_placement * last_t_placeme
     return row_transitions;
 }
 
-int f_column_transitions (struct board * board, struct t_placement * last_t_placement) {
+float f_column_transitions (struct board * board, struct t_placement * last_t_placement) {
     int column_transitions = 0;
 
     for (int x = 0; x < board->width; x++) {
@@ -308,7 +308,7 @@ int f_column_transitions (struct board * board, struct t_placement * last_t_plac
     return column_transitions;
 }
 
-int f_cumulative_wells (struct board * board, struct t_placement * last_t_placement) {
+float f_cumulative_wells (struct board * board, struct t_placement * last_t_placement) {
     int cumulative_well_sum = 0;
 
     int series_sum (int n) {
@@ -335,7 +335,7 @@ int f_cumulative_wells (struct board * board, struct t_placement * last_t_placem
     return cumulative_well_sum;
 }
 
-int f_min_height (struct board * board, struct t_placement * last_t_placement) {
+float f_min_height (struct board * board, struct t_placement * last_t_placement) {
     int min_height = board->height;
 
     for (int x = 0; x < board->width; x++) {
@@ -355,11 +355,11 @@ int f_min_height (struct board * board, struct t_placement * last_t_placement) {
     return min_height;
 }
 
-int f_max_height_difference (struct board * board, struct t_placement * last_t_placement) {
+float f_max_height_difference (struct board * board, struct t_placement * last_t_placement) {
     return f_max_height(board, last_t_placement) - f_min_height(board, last_t_placement);
 }
 
-int f_n_adjacent_holes (struct board * board, struct t_placement * last_t_placement) {
+float f_n_adjacent_holes (struct board * board, struct t_placement * last_t_placement) {
     int n_holes = 0,
         in_hole;
 
@@ -379,7 +379,7 @@ int f_n_adjacent_holes (struct board * board, struct t_placement * last_t_placem
     return n_holes;
 }
 
-int f_max_well_depth (struct board * board, struct t_placement * last_t_placement) {
+float f_max_well_depth (struct board * board, struct t_placement * last_t_placement) {
     int max_well_depth = 0;
 
     max_well_depth = max(max_well_depth, column_height(board, 1) - column_height(board, 0));
@@ -398,7 +398,7 @@ int f_max_well_depth (struct board * board, struct t_placement * last_t_placemen
     return max_well_depth;
 }
 
-int f_hole_depths (struct board * board, struct t_placement * last_t_placement) {
+float f_hole_depths (struct board * board, struct t_placement * last_t_placement) {
     int holes_depths = 0;
 
     for (int x = 0; x < board->width; x++) {
@@ -422,7 +422,7 @@ int f_hole_depths (struct board * board, struct t_placement * last_t_placement) 
     return holes_depths;
 }
 
-int f_n_rows_with_holes (struct board * board, struct t_placement * last_t_placement) {
+float f_n_rows_with_holes (struct board * board, struct t_placement * last_t_placement) {
     int rows_with_holes[board->height],
         n_rows_with_holes = 0;
 

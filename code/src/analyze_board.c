@@ -80,7 +80,7 @@ int main (int argc, char **argv) {
     for (int i = 0; i < N_FEATURES; i++) {
         if (opt.feature_enabled[i]) {
             printf(
-                "%-*s %d\n",
+                "%-*s % .0f\n",
                 max_feature_length, 
                 feature_name(i),
                 (feature_function(i)) (&board, &((struct t_placement) {

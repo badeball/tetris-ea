@@ -13,7 +13,7 @@ void free_genotype (struct genotype* g) {
 struct genotype* initialize_genotype (struct options* opt) {
     struct genotype* g = malloc(sizeof(struct genotype));
 
-    g->feature_weights = malloc(sizeof(int) * opt->n_features_enabled);
+    g->feature_weights = malloc(sizeof(float) * opt->n_features_enabled);
 
     return g;
 }
@@ -21,7 +21,7 @@ struct genotype* initialize_genotype (struct options* opt) {
 struct genotype* copy_genotype (struct genotype* genotype, struct options* opt) {
     struct genotype* copy = initialize_genotype(opt);
 
-    memcpy(copy->feature_weights, genotype->feature_weights, sizeof(int) * opt->n_features_enabled);
+    memcpy(copy->feature_weights, genotype->feature_weights, sizeof(float) * opt->n_features_enabled);
 
     return copy;
 }
