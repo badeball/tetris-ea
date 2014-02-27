@@ -248,27 +248,24 @@ float f_n_blocks (struct board * board, struct t_placement * last_t_placement) {
 }
 
 float f_eroded_piece_cells (struct board * board, struct t_placement * last_t_placement) {
-    int lines_removed = 0,
-        eroded_cells = 0;
+    if (last_t_placement->n_lines_removed == 0) {
+        return 0;
+    }
 
-    for (int y = 0; y < board->height; y++) {
-        for (int x = 0; x < board->width; x++) {
-            if (*address_tile(x, y, board) == 0) {
-                break;
-            } else if (x == board->width - 1) {
-                lines_removed++;
+    int eroded_cells = 0;
 
-                if (y >= last_t_placement->y + last_t_placement->tetromino->p_top &&
-                    y <= last_t_placement->y + 3 - last_t_placement->tetromino->p_bottom) {
-                    for (int i = last_t_placement->tetromino->p_left; i < 4 - last_t_placement->tetromino->p_right; i++) {
-                        eroded_cells += last_t_placement->tetromino->tiles[y - last_t_placement->y][i];
-                    }
-                }
+    for (int i = 0; i < last_t_placement->n_lines_removed; i++) {
+        int y = last_t_placement->lines_removed[i];
+
+        if (y >= last_t_placement->y + last_t_placement->tetromino->p_top &&
+            y <= last_t_placement->y + 3 - last_t_placement->tetromino->p_bottom) {
+            for (int x = last_t_placement->tetromino->p_left; x < 4 - last_t_placement->tetromino->p_right; x++) {
+                eroded_cells += last_t_placement->tetromino->tiles[y - last_t_placement->y][x];
             }
         }
     }
 
-    return lines_removed * eroded_cells;
+    return last_t_placement->n_lines_removed * eroded_cells;
 }
 
 float f_row_transitions (struct board * board, struct t_placement * last_t_placement) {

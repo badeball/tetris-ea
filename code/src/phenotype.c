@@ -88,7 +88,7 @@ int phenotype_fitness (struct phenotype * phenotype, struct options* opt) {
         }
 
         // Remove lines and add to the current fitness value.
-        fitness += remove_lines(board);
+        fitness += remove_lines(board, NULL);
 
         // Fill the lookahead with a new tetromino.
         for (int i = 0; i < opt->n_piece_lookahead; i++) {
@@ -182,15 +182,21 @@ void _look_ahead(struct future * f, struct board * board, struct phenotype * phe
                 }
 
                 if (n_ahead == opt->n_piece_lookahead) {
-                    alt->score = board_score(boards[board_i], phenotype, & (struct t_placement) {
+                    struct t_placement last_t_placement = {
                         .tetromino = &tetromino,
                         .x = position_i,
                         .y = y,
-                    }, opt);
+                    };
+
+                    remove_lines(boards[board_i], &last_t_placement);
+
+                    alt->score = board_score(boards[board_i], phenotype, &last_t_placement, opt);
+
+                    free(last_t_placement.lines_removed);
 
                     expand_future(f, alt);
                 } else {
-                    remove_lines(boards[board_i]);
+                    remove_lines(boards[board_i], NULL);
 
                     _look_ahead(f, boards[board_i], phenotype, n_ahead + 1, alt, next_tetrominos, opt);
                 }

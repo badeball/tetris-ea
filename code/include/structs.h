@@ -38,6 +38,8 @@ struct t_placement {
     struct tetromino * tetromino;
     int x;
     int y;
+    int n_lines_removed;
+    int * lines_removed;
 };
 
 enum selection {

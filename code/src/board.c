@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "board.h"
+#include "feature.h"
 
 struct board * initialize_board (int width, int height) {
     struct board * board = malloc(sizeof(struct board));
@@ -26,22 +27,31 @@ struct board * copy_board (struct board * board) {
     return copy;
 }
 
-int remove_lines (struct board * board) {
-    int lines_removed = 0;
+int remove_lines (struct board * board, struct t_placement * last_t_placement) {
+    int n_lines_removed = 0;
+
+    if (last_t_placement != NULL) {
+        last_t_placement->n_lines_removed = 0;
+        last_t_placement->lines_removed = malloc(sizeof(int) * board->height);
+    }
 
     for (int y = 0; y < board->height; y++) {
         for (int x = 0; x < board->width; x++) {
             if (*address_tile(x, y, board) == 0) {
                 break;
             } else if (x == board->width - 1) {
-                lines_removed++;
+                if (last_t_placement != NULL) {
+                    last_t_placement->lines_removed[last_t_placement->n_lines_removed++] = y;
+                }
+
+                n_lines_removed++;
 
                 remove_line(board, y);
             }
         }
     }
 
-    return lines_removed;
+    return n_lines_removed;
 }
 
 void remove_line (struct board * board, int line) {
