@@ -230,12 +230,10 @@ int continue_board(struct board * board, struct phenotype* phenotype, int next_t
 
         free(f.alternatives);
 
-        int y;
-
         place_tetromino(
             board,
             &tetrominos[next_tetrominos[0] + max_alt.rotation_i],
-            max_alt.position_i, &y);
+            max_alt.position_i, NULL);
 
         return 0;
     }

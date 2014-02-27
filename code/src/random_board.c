@@ -54,13 +54,11 @@ int main (int argc, char **argv) {
 
         struct tetromino tetromino = tetrominos[tetromino_i];
 
-        int y;
-
         place_tetromino(
             board,
             &tetromino,
             l_rand(&opt) % (board->width - 4 + 1 + tetromino.p_left + tetromino.p_right) - tetromino.p_left,
-            &y);
+            NULL);
     }
 
     print_board(stdout, board);

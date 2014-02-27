@@ -226,7 +226,9 @@ int place_tetromino (struct board * board, struct tetromino * tetromino, int pos
         return 1;
     }
 
-    *placement = i;
+    if (placement != NULL) {
+        *placement = i;
+    }
 
     for (int y = tetromino->p_top; y < 4 - tetromino->p_bottom; y++) {
         for (int x = tetromino->p_left; x < 4 - tetromino->p_right; x++) {
