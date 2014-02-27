@@ -172,7 +172,10 @@ float f_n_holes (struct board * board, struct t_placement * last_t_placement) {
 }
 
 float f_landing_height (struct board * board, struct t_placement * last_t_placement) {
-    return board->height - last_t_placement->y - 4 + last_t_placement->tetromino->p_bottom;
+    return board->height - last_t_placement->y
+        - 4
+        + last_t_placement->tetromino->p_bottom
+        + (4 - 1 - last_t_placement->tetromino->p_top - last_t_placement->tetromino->p_bottom) / 2.0f;
 }
 
 float f_removed_lines (struct board * board, struct t_placement * last_t_placement) {
@@ -250,7 +253,7 @@ float f_eroded_piece_cells (struct board * board, struct t_placement * last_t_pl
                 lines_removed++;
 
                 if (y >= last_t_placement->y + last_t_placement->tetromino->p_top &&
-                    y < last_t_placement->y + 3 - last_t_placement->tetromino->p_bottom) {
+                    y <= last_t_placement->y + 3 - last_t_placement->tetromino->p_bottom) {
                     for (int i = last_t_placement->tetromino->p_left; i < 4 - last_t_placement->tetromino->p_right; i++) {
                         eroded_cells += last_t_placement->tetromino->tiles[y - last_t_placement->y][i];
                     }
@@ -296,7 +299,7 @@ float f_column_transitions (struct board * board, struct t_placement * last_t_pl
             column_transitions += a ^ b;
         }
 
-        if (*address_tile(x, 0, board) == 0) {
+        if (*address_tile(x, 0, board) == 1) {
             column_transitions++;
         }
 
@@ -319,17 +322,36 @@ float f_cumulative_wells (struct board * board, struct t_placement * last_t_plac
         }
     }
 
-    cumulative_well_sum += series_sum(max(0, column_height(board, 1) - column_height(board, 0)));
-    cumulative_well_sum += series_sum(max(0, column_height(board, board->width - 2) - column_height(board, board->width - 1)));
+    for (int x = 0; x < board->width; x++) {
+        for (int y = 0; y < board->height; y++) {
+            int left, right;
 
-    for (int i = 1; i < board->width - 1; i++) {
-        cumulative_well_sum += series_sum(max(
-            0,
-            min(
-                column_height(board, i - 1),
-                column_height(board, i + 1)
-            ) - column_height(board, i)
-        ));
+            if (x == 0) {
+                left = 1;
+            } else {
+                left = *address_tile(x - 1, y, board);
+            }
+
+            if (x == board->width - 1) {
+                right = 1;
+            } else {
+                right = *address_tile(x + 1, y, board);
+            }
+
+            if (*address_tile(x, y, board) == 0 && left == 1 && right == 1) {
+                int depth = 1;
+
+                for (y++; y < board->height; y++) {
+                    if (*address_tile(x, y, board) == 0) {
+                        depth++;
+                    } else {
+                        break;
+                    }
+                }
+
+                cumulative_well_sum += series_sum(depth);
+            }
+        }
     }
 
     return cumulative_well_sum;
