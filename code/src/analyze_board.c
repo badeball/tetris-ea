@@ -83,7 +83,7 @@ int main (int argc, char **argv) {
                 "%-*s % .0f\n",
                 max_feature_length, 
                 feature_name(i),
-                (feature_function(i)) (&board, &((struct t_placement) {
+                (feature_function(i)) (&board, &((struct t_last_placement) {
                     .tetromino = &tetrominos[0],
                     .x = 0,
                     .y = 0,

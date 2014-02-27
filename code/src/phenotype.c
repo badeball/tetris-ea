@@ -58,11 +58,11 @@ void write_phenotype (FILE * stream, struct phenotype * phenotype, struct option
     }
 }
 
-float board_score (struct board * board, struct phenotype * phenotype, struct t_placement * last_t_placement, struct options * opt) {
+float board_score (struct board * board, struct phenotype * phenotype, struct t_last_placement * tlp, struct options * opt) {
     float score = 0;
 
     for (int i = 0; i < opt->n_features_enabled; i++) {
-        score += phenotype->genotype->feature_weights[i] * (* feature_function(opt->enabled_f_indices[i])) (board, last_t_placement);
+        score += phenotype->genotype->feature_weights[i] * (* feature_function(opt->enabled_f_indices[i])) (board, tlp);
     }
 
     return score;
@@ -163,7 +163,7 @@ void _look_ahead(struct future * f, struct board * board, struct phenotype * phe
     // Place the tetromino in all possible ways on the boards.
     int board_i = 0;
 
-    struct t_placement last_t_placements[n_boards];
+    struct t_last_placement tlp[n_boards];
 
     for (int rotation_i = 0; rotation_i < n_rotations; rotation_i++) {
         struct tetromino tetromino = tetrominos[next_tetrominos[n_ahead] + rotation_i];
@@ -182,17 +182,17 @@ void _look_ahead(struct future * f, struct board * board, struct phenotype * phe
                 }
 
                 if (n_ahead == opt->n_piece_lookahead) {
-                    struct t_placement last_t_placement = {
+                    struct t_last_placement tlp = {
                         .tetromino = &tetromino,
                         .x = position_i,
                         .y = y,
                     };
 
-                    remove_lines(boards[board_i], &last_t_placement);
+                    remove_lines(boards[board_i], &tlp);
 
-                    alt->score = board_score(boards[board_i], phenotype, &last_t_placement, opt);
+                    alt->score = board_score(boards[board_i], phenotype, &tlp, opt);
 
-                    free(last_t_placement.lines_removed);
+                    free(tlp.lines_removed);
 
                     expand_future(f, alt);
                 } else {

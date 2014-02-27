@@ -34,7 +34,7 @@ struct tetromino {
 
 struct tetromino tetrominos[19];
 
-struct t_placement {
+struct t_last_placement {
     struct tetromino * tetromino;
     int x;
     int y;

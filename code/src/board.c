@@ -27,12 +27,12 @@ struct board * copy_board (struct board * board) {
     return copy;
 }
 
-int remove_lines (struct board * board, struct t_placement * last_t_placement) {
+int remove_lines (struct board * board, struct t_last_placement * tlp) {
     int n_lines_removed = 0;
 
-    if (last_t_placement != NULL) {
-        last_t_placement->n_lines_removed = 0;
-        last_t_placement->lines_removed = malloc(sizeof(int) * board->height);
+    if (tlp != NULL) {
+        tlp->n_lines_removed = 0;
+        tlp->lines_removed = malloc(sizeof(int) * board->height);
     }
 
     for (int y = 0; y < board->height; y++) {
@@ -40,8 +40,8 @@ int remove_lines (struct board * board, struct t_placement * last_t_placement) {
             if (*address_tile(x, y, board) == 0) {
                 break;
             } else if (x == board->width - 1) {
-                if (last_t_placement != NULL) {
-                    last_t_placement->lines_removed[last_t_placement->n_lines_removed++] = y;
+                if (tlp != NULL) {
+                    tlp->lines_removed[tlp->n_lines_removed++] = y;
                 }
 
                 n_lines_removed++;
