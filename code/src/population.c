@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "genotype.h"
+#include "phenotype.h"
 #include "population.h"
 #include "random.h"
 

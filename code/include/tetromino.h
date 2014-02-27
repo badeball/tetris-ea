@@ -1,19 +1,7 @@
 #ifndef PIECE_H
 #define PIECE_H
 
-#include "board.h"
-#include "options.h"
-
-struct tetromino {
-    int p_top;
-    int p_left;
-    int p_right;
-    int p_bottom;
-
-    int tiles[4][4];
-};
-
-struct tetromino tetrominos[19];
+#include "structs.h"
 
 #define N_TETROMINO(tetromino, n) \
     if (n == 0) {                 \

@@ -3,11 +3,7 @@
 
 #include <stdio.h>
 
-struct board {
-    int width;
-    int height;
-    int * tiles;
-};
+#include "structs.h"
 
 struct board * initialize_board (int width, int height);
 struct board * copy_board (struct board * board);

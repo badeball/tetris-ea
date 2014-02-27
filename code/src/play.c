@@ -3,6 +3,7 @@
 #include <time.h>
 
 #include "feature.h"
+#include "genotype.h"
 #include "options.h"
 #include "phenotype.h"
 

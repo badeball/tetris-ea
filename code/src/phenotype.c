@@ -3,6 +3,8 @@
 #include <unistd.h>
 #include <string.h>
 
+#include "board.h"
+#include "feature.h"
 #include "genotype.h"
 #include "options.h"
 #include "phenotype.h"

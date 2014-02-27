@@ -10,7 +10,7 @@ LIBS=-lm
 
 EXECUTABLES=tetris random_board analyze_board play
 
-_DEPS = board.h feature.h genotype.h options.h phenotype.h population.h random.h selection.h tetromino.h threading.h
+_DEPS = board.h feature.h genotype.h options.h phenotype.h population.h random.h selection.h structs.h tetromino.h threading.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
 _OBJ = board.o feature.o genotype.o options.o phenotype.o population.o random.o selection.o tetromino.o threading.o

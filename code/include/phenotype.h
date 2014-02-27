@@ -1,12 +1,9 @@
 #ifndef PHENOTYPE_H
 #define PHENOTYPE_H
 
-#include "genotype.h"
+#include <stdio.h>
 
-struct phenotype {
-    int fitness;
-    struct genotype* genotype;
-};
+#include "structs.h"
 
 struct phenotype* copy_phenotype (struct phenotype* phenotype, struct options* opt);
 struct phenotype* initialize_phenotype (struct genotype* g);

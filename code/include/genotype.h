@@ -1,12 +1,7 @@
 #ifndef GENOTYPE_H
 #define GENOTYPE_H
 
-#include "feature.h"
-#include "options.h"
-
-struct genotype {
-    float * feature_weights;
-};
+#include "structs.h"
 
 void free_genotype (struct genotype* g);
 struct genotype* initialize_genotype (struct options* opt);

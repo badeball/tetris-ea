@@ -7,7 +7,10 @@
 #include <signal.h>
 
 #include "board.h"
+#include "feature.h"
+#include "genotype.h"
 #include "options.h"
+#include "phenotype.h"
 #include "population.h"
 #include "selection.h"
 #include "tetromino.h"

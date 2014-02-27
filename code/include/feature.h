@@ -1,14 +1,7 @@
 #ifndef FEATURE_H
 #define FEATURE_H
 
-#include "tetromino.h"
-#include "board.h"
-
-struct t_placement {
-    struct tetromino * tetromino;
-    int x;
-    int y;
-};
+#include "structs.h"
 
 int index_feature (char * name);
 char * feature_name (int feature_i);

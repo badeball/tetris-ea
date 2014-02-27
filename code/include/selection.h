@@ -1,8 +1,7 @@
 #ifndef SELECTION_H
 #define SELECTION_H
 
-#include "options.h"
-#include "population.h"
+#include "structs.h"
 
 struct phenotype** select_parent_pairs (struct population* population, struct options* opt);
 struct phenotype* select_by_tournament (struct population* population, struct options* opt);

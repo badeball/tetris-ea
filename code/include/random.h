@@ -1,7 +1,7 @@
 #ifndef RANDOM_H
 #define RANDOM_H
 
-#include "options.h"
+#include "structs.h"
 
 int l_rand (struct options* opt);
 

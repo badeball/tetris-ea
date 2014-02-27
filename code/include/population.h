@@ -1,13 +1,7 @@
 #ifndef POPULATION_H
 #define POPULATION_H
 
-#include "options.h"
-#include "phenotype.h"
-
-struct population {
-    int size;
-    struct phenotype** individuals;
-};
+#include "structs.h"
 
 struct population* initialize_population_pool (int size);
 void free_population_pool (struct population* p);
