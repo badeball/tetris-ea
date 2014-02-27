@@ -24,7 +24,8 @@ float f_n_blocks              (struct board * board, struct t_placement * last_t
 float f_eroded_piece_cells    (struct board * board, struct t_placement * last_t_placement);
 float f_row_transitions       (struct board * board, struct t_placement * last_t_placement);
 float f_column_transitions    (struct board * board, struct t_placement * last_t_placement);
-float f_cumulative_wells      (struct board * board, struct t_placement * last_t_placement);
+float f_cumulative_wells_dell (struct board * board, struct t_placement * last_t_placement);
+float f_cumulative_wells_fast (struct board * board, struct t_placement * last_t_placement);
 float f_min_height            (struct board * board, struct t_placement * last_t_placement);
 float f_max_height_difference (struct board * board, struct t_placement * last_t_placement);
 float f_n_adjacent_holes      (struct board * board, struct t_placement * last_t_placement);

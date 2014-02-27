@@ -24,20 +24,22 @@ int index_feature (char * name) {
         return 8;
     } else if (strcmp(name, "--f-column-transitions") == 0) {
         return 9;
-    } else if (strcmp(name, "--f-cumulative-wells") == 0) {
+    } else if (strcmp(name, "--f-cumulative-wells-dell") == 0) {
         return 10;
-    } else if (strcmp(name, "--f-min-height") == 0) {
+    } else if (strcmp(name, "--f-cumulative-wells-fast") == 0) {
         return 11;
-    } else if (strcmp(name, "--f-max-height-difference") == 0) {
+    } else if (strcmp(name, "--f-min-height") == 0) {
         return 12;
-    } else if (strcmp(name, "--f-n-adjacent-holes") == 0) {
+    } else if (strcmp(name, "--f-max-height-difference") == 0) {
         return 13;
-    } else if (strcmp(name, "--f-max-well-depth") == 0) {
+    } else if (strcmp(name, "--f-n-adjacent-holes") == 0) {
         return 14;
-    } else if (strcmp(name, "--f-hole-depths") == 0) {
+    } else if (strcmp(name, "--f-max-well-depth") == 0) {
         return 15;
-    } else if (strcmp(name, "--f-n-rows-with-holes") == 0) {
+    } else if (strcmp(name, "--f-hole-depths") == 0) {
         return 16;
+    } else if (strcmp(name, "--f-n-rows-with-holes") == 0) {
+        return 17;
     } else {
         return -1;
     }
@@ -66,18 +68,20 @@ char * feature_name (int feature_i) {
     case 9:
         return "--f-column-transitions";
     case 10:
-        return "--f-cumulative-wells";
+        return "--f-cumulative-wells-dell";
     case 11:
-        return "--f-min-height";
+        return "--f-cumulative-wells-fast";
     case 12:
-        return "--f-max-height-difference";
+        return "--f-min-height";
     case 13:
-        return "--f-n-adjacent-holes";
+        return "--f-max-height-difference";
     case 14:
-        return "--f-max-well-depth";
+        return "--f-n-adjacent-holes";
     case 15:
-        return "--f-hole-depths";
+        return "--f-max-well-depth";
     case 16:
+        return "--f-hole-depths";
+    case 17:
         return "--f-n-rows-with-holes";
     }
 }
@@ -105,18 +109,20 @@ float (* feature_function(int feature_i)) (struct board * board, struct t_placem
     case 9:
         return &f_column_transitions;
     case 10:
-        return &f_cumulative_wells;
+        return &f_cumulative_wells_dell;
     case 11:
-        return &f_min_height;
+        return &f_cumulative_wells_fast;
     case 12:
-        return &f_max_height_difference;
+        return &f_min_height;
     case 13:
-        return &f_n_adjacent_holes;
+        return &f_max_height_difference;
     case 14:
-        return &f_max_well_depth;
+        return &f_n_adjacent_holes;
     case 15:
-        return &f_hole_depths;
+        return &f_max_well_depth;
     case 16:
+        return &f_hole_depths;
+    case 17:
         return &f_n_rows_with_holes;
     }
 }
@@ -311,7 +317,43 @@ float f_column_transitions (struct board * board, struct t_placement * last_t_pl
     return column_transitions;
 }
 
-float f_cumulative_wells (struct board * board, struct t_placement * last_t_placement) {
+float f_cumulative_wells_dell (struct board * board, struct t_placement * last_t_placement) {
+    int cumulative_well_sum = 0;
+
+    for (int x = 0; x < board->width; x++) {
+        for (int y = 0; y < board->height; y++) {
+            int left, right;
+
+            if (x == 0) {
+                left = 1;
+            } else {
+                left = *address_tile(x - 1, y, board);
+            }
+
+            if (x == board->width - 1) {
+                right = 1;
+            } else {
+                right = *address_tile(x + 1, y, board);
+            }
+
+            if (*address_tile(x, y, board) == 0 && left == 1 && right == 1) {
+                cumulative_well_sum++;
+
+                for (int i = y + 1; i < board->height; i++) {
+                    if (*address_tile(x, i, board) == 0) {
+                        cumulative_well_sum++;
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    return cumulative_well_sum;
+}
+
+float f_cumulative_wells_fast (struct board * board, struct t_placement * last_t_placement) {
     int cumulative_well_sum = 0;
 
     int series_sum (int n) {

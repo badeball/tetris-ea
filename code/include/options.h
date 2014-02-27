@@ -1,7 +1,7 @@
 #ifndef OPTIONS_H
 #define OPTIONS_H
 
-#define N_FEATURES 17
+#define N_FEATURES 18
 
 enum selection {
     TOURNAMENT,
