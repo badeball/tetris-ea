@@ -30,8 +30,10 @@ struct phenotype* initialize_phenotype (struct genotype* g) {
 }
 
 void free_phenotype (struct phenotype * phenotype) {
-    free_genotype(phenotype->genotype);
-    free(phenotype);
+    if (phenotype != NULL) {
+        free_genotype(phenotype->genotype);
+        free(phenotype);
+    }
 }
 
 int compare_phenotypes (const void * p_1, const void * p_2) {
