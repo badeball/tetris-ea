@@ -110,6 +110,9 @@ void sigint_handle (int signal) {
 }
 
 int main (int argc, char **argv) {
+    clock_t begin = clock(),
+            end;
+
     opt.seedp = time(NULL);
 
     program_name = argv[0];
@@ -251,6 +254,8 @@ int main (int argc, char **argv) {
     struct phenotype* winner = initialize_phenotype(initialize_genotype(&opt));
     winner->fitness = -1;
 
+    unsigned long long total_cleared_lines = 0;
+
     for (int i = 0; (i < opt.max_n_generations || opt.max_n_generations == 0) && !user_exit; i++) {
         PRINT_V("Simulating generation %d.\n", i + 1);
 
@@ -273,6 +278,7 @@ int main (int argc, char **argv) {
 
         for (int a = 0; a < opt.population_size - opt.elitism; a++) {
             children->individuals[a]->fitness = average_phenotype_fitness(children->individuals[a], &opt);
+            total_cleared_lines += children->individuals[a]->fitness * opt.n_trials;
         }
 
         if (opt.elitism) {
@@ -325,5 +331,15 @@ int main (int argc, char **argv) {
         f = fopen(run_log_solution_file, "a");
         write_phenotype(f, winner, &opt);
         fclose(f);
+    }
+
+    if (opt.verbose) {
+        end = clock();
+
+        double seconds = (double)(end - begin) / CLOCKS_PER_SEC;
+
+        printf("Total cleared lines was %'llu.\n", total_cleared_lines);
+        printf("Execution finished after %.2f seconds.\n", seconds);
+        printf("This amounts to %.2f cleared lines per second.\n", total_cleared_lines / seconds);
     }
 }

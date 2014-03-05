@@ -31,6 +31,9 @@ void print_help_text () {
 }
 
 int main (int argc, char **argv) {
+    clock_t begin = clock(),
+            end;
+
     program_name = argv[0];
 
     struct options opt = {
@@ -93,7 +96,17 @@ int main (int argc, char **argv) {
             sum += score;
         }
 
-        printf("The average score of %d trials is %d.\n", opt.n_trials, sum / opt.n_trials);
+        end = clock();
+
+        double seconds = (double)(end - begin) / CLOCKS_PER_SEC;
+
+        if (opt.n_trials > 1) {
+            printf("The average score of %d trials is %d.\n", opt.n_trials, sum / opt.n_trials);
+            printf("Total cleared lines was %'llu.\n", sum);
+        }
+
+        printf("Execution finished after %.2f seconds.\n", seconds);
+        printf("This amounts to %.2f cleared lines per second.\n", sum / seconds);
     }
 
     free_phenotype(phenotype);
