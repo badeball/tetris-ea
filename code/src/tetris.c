@@ -37,6 +37,8 @@ struct options opt = {
     .board_height          = 20,
     .print_board           = 0,
     .n_piece_lookahead     = 0,
+    .randomization_range   = 100,
+    .mutation_range        = 100,
 
     .mutation_rate                     = 0.995,
     .crossover_rate                    = 0.5,
@@ -89,6 +91,12 @@ void print_help_text () {
         "                      ahead of the current tetromino. Higher means that the\n"
         "                      controller can take more informed choices, but it will\n"
         "                      result in significantly higher computation times.\n"
+        "  --randomization-range N (defaults to 100)\n"
+        "                      Determines the range of value a weight can obtain during\n"
+        "                      randomization which occurs at initialization.\n"
+        "  --mutation-range n (defaults to 100)\n"
+        "                      Determines the range of value that is added to a weight\n"
+        "                      during mutation.\n"
         "  --multi-threading   calculate fitness values in parallel by multi-threading\n"
         "  -l or --log-dir     specify the location for run logs\n"
         "  --no-log            do not log results (-i or --no-log needs to be defined)\n"
@@ -161,6 +169,10 @@ int main (int argc, char **argv) {
             opt.board_height = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--n-piece-lookahead") == 0) {
             opt.n_piece_lookahead = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--randomization-range") == 0) {
+            opt.randomization_range = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--mutation-range") == 0) {
+            opt.mutation_range = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--elitism") == 0) {
             opt.elitism = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--multi-threading") == 0) {

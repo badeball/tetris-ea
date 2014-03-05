@@ -31,7 +31,7 @@ struct genotype* copy_genotype (struct genotype* genotype, struct options* opt) 
 
 void randomize_genotype (struct genotype* g, struct options* opt) {
     for (int i = 0; i < opt->n_features_enabled; i++) {
-        g->feature_weights[i] = l_rand(opt) % 1000 - 500;
+        g->feature_weights[i] = l_rand(opt) % opt->randomization_range - opt->randomization_range / 2;
         g->feature_enabled[i] = l_rand(opt) % 2;
     }
 }
@@ -100,7 +100,7 @@ struct genotype* crossover_genotypes (struct genotype* g_1, struct genotype* g_2
 void mutate_genotype (struct genotype* g, struct options* opt) {
     for (int i = 0; i < opt->n_features_enabled; i++) {
         if (l_rand(opt) > RAND_MAX * opt->mutation_rate) {
-            g->feature_weights[i] += - 20 + l_rand(opt) % 40;
+            g->feature_weights[i] += l_rand(opt) % opt->mutation_range - opt->mutation_range / 2;
         }
 
         if (l_rand(opt) > RAND_MAX * opt->mutation_rate) {

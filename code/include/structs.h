@@ -70,6 +70,8 @@ struct options {
     int board_height;
     int print_board;
     int n_piece_lookahead;
+    int randomization_range;
+    int mutation_range;
 
     float mutation_rate;
     float crossover_rate;
