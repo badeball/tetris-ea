@@ -5,6 +5,7 @@
 
 struct genotype {
     float * feature_weights;
+    int * feature_enabled;
 };
 
 struct phenotype {

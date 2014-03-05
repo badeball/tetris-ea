@@ -51,10 +51,12 @@ void write_phenotype (FILE * stream, struct phenotype * phenotype, struct option
     }
 
     for (int i = 0; i < opt->n_features_enabled; i++) {
-        fprintf(stream, "%-*s % .2f\n",
-            max_feature_length,
-            feature_name(opt->enabled_f_indices[i]),
-            phenotype->genotype->feature_weights[i]);
+        if (phenotype->genotype->feature_enabled[i]) {
+            fprintf(stream, "%-*s % .2f\n",
+                max_feature_length,
+                feature_name(opt->enabled_f_indices[i]),
+                phenotype->genotype->feature_weights[i]);
+        }
     }
 }
 
@@ -62,7 +64,9 @@ float board_score (struct board * board, struct phenotype * phenotype, struct t_
     float score = 0;
 
     for (int i = 0; i < opt->n_features_enabled; i++) {
-        score += phenotype->genotype->feature_weights[i] * (* feature_function(opt->enabled_f_indices[i])) (board, tlp);
+        if (phenotype->genotype->feature_enabled[i]) {
+            score += phenotype->genotype->feature_weights[i] * (* feature_function(opt->enabled_f_indices[i])) (board, tlp);
+        }
     }
 
     return score;

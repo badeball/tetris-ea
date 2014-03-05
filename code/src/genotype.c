@@ -7,6 +7,7 @@
 
 void free_genotype (struct genotype* g) {
     free(g->feature_weights);
+    free(g->feature_enabled);
     free(g);
 }
 
@@ -14,6 +15,7 @@ struct genotype* initialize_genotype (struct options* opt) {
     struct genotype* g = malloc(sizeof(struct genotype));
 
     g->feature_weights = malloc(sizeof(float) * opt->n_features_enabled);
+    g->feature_enabled = malloc(sizeof(int) * opt->n_features_enabled);
 
     return g;
 }
@@ -22,6 +24,7 @@ struct genotype* copy_genotype (struct genotype* genotype, struct options* opt) 
     struct genotype* copy = initialize_genotype(opt);
 
     memcpy(copy->feature_weights, genotype->feature_weights, sizeof(float) * opt->n_features_enabled);
+    memcpy(copy->feature_enabled, genotype->feature_enabled, sizeof(int) * opt->n_features_enabled);
 
     return copy;
 }
@@ -29,6 +32,7 @@ struct genotype* copy_genotype (struct genotype* genotype, struct options* opt) 
 void randomize_genotype (struct genotype* g, struct options* opt) {
     for (int i = 0; i < opt->n_features_enabled; i++) {
         g->feature_weights[i] = l_rand(opt) % 1000 - 500;
+        g->feature_enabled[i] = l_rand(opt) % 2;
     }
 }
 
@@ -77,8 +81,10 @@ struct genotype* crossover_genotypes (struct genotype* g_1, struct genotype* g_2
         for (int i = 0; i < opt->n_features_enabled; i++) {
             if (selecting_from) {
                 g->feature_weights[i] = g_1->feature_weights[i];
+                g->feature_enabled[i] = g_1->feature_enabled[i];
             } else {
                 g->feature_weights[i] = g_2->feature_weights[i];
+                g->feature_enabled[i] = g_2->feature_enabled[i];
             }
 
             if (at_point < opt->crossover_points && i == selected_points[at_point]) {
@@ -95,6 +101,10 @@ void mutate_genotype (struct genotype* g, struct options* opt) {
     for (int i = 0; i < opt->n_features_enabled; i++) {
         if (l_rand(opt) > RAND_MAX * opt->mutation_rate) {
             g->feature_weights[i] += - 20 + l_rand(opt) % 40;
+        }
+
+        if (l_rand(opt) > RAND_MAX * opt->mutation_rate) {
+            g->feature_enabled[i] += l_rand(opt) % 2;
         }
     }
 }
