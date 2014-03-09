@@ -1,7 +1,7 @@
 #ifndef STRUCTS_H
 #define STRUCTS_H
 
-#define N_FEATURES 18
+#define N_FEATURES 25
 
 struct genotype {
     float * feature_weights;

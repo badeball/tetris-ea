@@ -10,36 +10,50 @@ int index_feature (char * name) {
         return 1;
     } else if (strcmp(name, "--f-landing-height") == 0) {
         return 2;
-    } else if (strcmp(name, "--f-removed-lines") == 0) {
+    } else if (strcmp(name, "--f-cell-transitions") == 0) {
         return 3;
-    } else if (strcmp(name, "--f-weighted-blocks") == 0) {
+    } else if (strcmp(name, "--f-deep-well-sum") == 0) {
         return 4;
-    } else if (strcmp(name, "--f-well-sum") == 0) {
+    } else if (strcmp(name, "--f-mean-height") == 0) {
         return 5;
-    } else if (strcmp(name, "--f-n-blocks") == 0) {
+    } else if (strcmp(name, "--f-removed-lines") == 0) {
         return 6;
-    } else if (strcmp(name, "--f-eroded-piece-cells") == 0) {
+    } else if (strcmp(name, "--f-weighted-blocks") == 0) {
         return 7;
-    } else if (strcmp(name, "--f-row-transitions") == 0) {
+    } else if (strcmp(name, "--f-well-sum") == 0) {
         return 8;
-    } else if (strcmp(name, "--f-column-transitions") == 0) {
+    } else if (strcmp(name, "--f-n-blocks") == 0) {
         return 9;
-    } else if (strcmp(name, "--f-cumulative-wells-dell") == 0) {
+    } else if (strcmp(name, "--f-eroded-piece-cells") == 0) {
         return 10;
-    } else if (strcmp(name, "--f-cumulative-wells-fast") == 0) {
+    } else if (strcmp(name, "--f-row-transitions") == 0) {
         return 11;
-    } else if (strcmp(name, "--f-min-height") == 0) {
+    } else if (strcmp(name, "--f-column-transitions") == 0) {
         return 12;
-    } else if (strcmp(name, "--f-max-height-difference") == 0) {
+    } else if (strcmp(name, "--f-cumulative-wells-dell") == 0) {
         return 13;
-    } else if (strcmp(name, "--f-n-adjacent-holes") == 0) {
+    } else if (strcmp(name, "--f-cumulative-wells-fast") == 0) {
         return 14;
-    } else if (strcmp(name, "--f-max-well-depth") == 0) {
+    } else if (strcmp(name, "--f-min-height") == 0) {
         return 15;
-    } else if (strcmp(name, "--f-hole-depths") == 0) {
+    } else if (strcmp(name, "--f-max-minus-mean-height") == 0) {
         return 16;
-    } else if (strcmp(name, "--f-n-rows-with-holes") == 0) {
+    } else if (strcmp(name, "--f-mean-minux-min-height") == 0) {
         return 17;
+    } else if (strcmp(name, "--f-mean-hole-depth") == 0) {
+        return 18;
+    } else if (strcmp(name, "--f-max-height-difference") == 0) {
+        return 19;
+    } else if (strcmp(name, "--f-n-adjacent-holes") == 0) {
+        return 20;
+    } else if (strcmp(name, "--f-max-well-depth") == 0) {
+        return 21;
+    } else if (strcmp(name, "--f-hole-depths") == 0) {
+        return 22;
+    } else if (strcmp(name, "--f-n-rows-with-holes") == 0) {
+        return 23;
+    } else if (strcmp(name, "--f-diversity") == 0) {
+        return 24;
     } else {
         return -1;
     }
@@ -54,35 +68,49 @@ char * feature_name (int feature_i) {
     case 2:
         return "--f-landing-height";
     case 3:
-        return "--f-removed-lines";
+        return "--f-cell-transitions";
     case 4:
-        return "--f-weighted-blocks";
+        return "--f-deep-well-sum";
     case 5:
-        return "--f-well-sum";
+        return "--f-mean-height";
     case 6:
-        return "--f-n-blocks";
+        return "--f-removed-lines";
     case 7:
-        return "--f-eroded-piece-cells";
+        return "--f-weighted-blocks";
     case 8:
-        return "--f-row-transitions";
+        return "--f-well-sum";
     case 9:
-        return "--f-column-transitions";
+        return "--f-n-blocks";
     case 10:
-        return "--f-cumulative-wells-dell";
+        return "--f-eroded-piece-cells";
     case 11:
-        return "--f-cumulative-wells-fast";
+        return "--f-row-transitions";
     case 12:
-        return "--f-min-height";
+        return "--f-column-transitions";
     case 13:
-        return "--f-max-height-difference";
+        return "--f-cumulative-wells-dell";
     case 14:
-        return "--f-n-adjacent-holes";
+        return "--f-cumulative-wells-fast";
     case 15:
-        return "--f-max-well-depth";
+        return "--f-min-height";
     case 16:
-        return "--f-hole-depths";
+        return "--f-max-minus-mean-height";
     case 17:
+        return "--f-mean-minux-min-height";
+    case 18:
+        return "--f-mean-hole-depth";
+    case 19:
+        return "--f-max-height-difference";
+    case 20:
+        return "--f-n-adjacent-holes";
+    case 21:
+        return "--f-max-well-depth";
+    case 22:
+        return "--f-hole-depths";
+    case 23:
         return "--f-n-rows-with-holes";
+    case 24:
+        return "--f-diversity";
     }
 }
 
@@ -95,35 +123,49 @@ float (* feature_function(int feature_i)) (struct board * board, struct t_last_p
     case 2:
         return &f_landing_height;
     case 3:
-        return &f_removed_lines;
+        return &f_cell_transitions;
     case 4:
-        return &f_weighted_blocks;
+        return &f_deep_well_sum;
     case 5:
-        return &f_well_sum;
+        return &f_mean_height;
     case 6:
-        return &f_n_blocks;
+        return &f_removed_lines;
     case 7:
-        return &f_eroded_piece_cells;
+        return &f_weighted_blocks;
     case 8:
-        return &f_row_transitions;
+        return &f_well_sum;
     case 9:
-        return &f_column_transitions;
+        return &f_n_blocks;
     case 10:
-        return &f_cumulative_wells_dell;
+        return &f_eroded_piece_cells;
     case 11:
-        return &f_cumulative_wells_fast;
+        return &f_row_transitions;
     case 12:
-        return &f_min_height;
+        return &f_column_transitions;
     case 13:
-        return &f_max_height_difference;
+        return &f_cumulative_wells_dell;
     case 14:
-        return &f_n_adjacent_holes;
+        return &f_cumulative_wells_fast;
     case 15:
-        return &f_max_well_depth;
+        return &f_min_height;
     case 16:
-        return &f_hole_depths;
+        return &f_max_minus_mean_height;
     case 17:
+        return &f_mean_minus_min_height;
+    case 18:
+        return &f_mean_hole_depth;
+    case 19:
+        return &f_max_height_difference;
+    case 20:
+        return &f_n_adjacent_holes;
+    case 21:
+        return &f_max_well_depth;
+    case 22:
+        return &f_hole_depths;
+    case 23:
         return &f_n_rows_with_holes;
+    case 24:
+        return &f_diversity;
     }
 }
 
@@ -182,6 +224,63 @@ float f_landing_height (struct board * board, struct t_last_placement * tlp) {
         - 4
         + tlp->tetromino->p_bottom
         + (4 - 1 - tlp->tetromino->p_top - tlp->tetromino->p_bottom) / 2.0f;
+}
+
+float f_cell_transitions (struct board * board, struct t_last_placement * tlp) {
+    int transitions = 0;
+
+    for (int x = 0; x < board->width; x++) {
+        for (int y = 0; y < board->height; y++) {
+            if (*address_tile(x, y, board) == 0) {
+                if (x > 0 && *address_tile(x - 1, y, board) == 1)
+                    transitions++;
+
+                if (x < board->width - 1 && *address_tile(x + 1, y, board) == 1)
+                    transitions++;
+
+                if (y > 0 && *address_tile(x, y - 1, board) == 1)
+                    transitions++;
+
+                if (y < board->height - 1 && *address_tile(x, y + 1, board) == 1)
+                    transitions++;
+            }
+        }
+    }
+
+    return transitions;
+}
+
+float f_deep_well_sum (struct board * board, struct t_last_placement * tlp) {
+    int well_sum = 0, well;
+
+    well = column_height(board, 1) - column_height(board, 0);
+
+    if (well > 1) well_sum += well;
+
+    well = column_height(board, board->width - 2) - column_height(board, board->width - 1);
+
+    if (well > 1) well_sum += well;
+
+    for (int i = 1; i < board->width - 1; i++) {
+        well = min(
+                column_height(board, i - 1),
+                column_height(board, i + 1)
+            ) - column_height(board, i);
+
+        if (well > 1) well_sum += well;
+    }
+
+    return well_sum;
+}
+
+float f_mean_height (struct board * board, struct t_last_placement * tlp) {
+    int sum = 0;
+
+    for (int i = 0; i < board->width; i++) {
+        sum += column_height(board, i);
+    }
+
+    return (float) sum / (float) board->width;
 }
 
 float f_removed_lines (struct board * board, struct t_last_placement * tlp) {
@@ -416,6 +515,18 @@ float f_min_height (struct board * board, struct t_last_placement * tlp) {
     return min_height;
 }
 
+float f_max_minus_mean_height (struct board * board, struct t_last_placement * tlp) {
+    return f_max_height(board, tlp) - f_mean_height(board, tlp);
+}
+
+float f_mean_minus_min_height (struct board * board, struct t_last_placement * tlp) {
+    return f_mean_height(board, tlp) - f_min_height(board, tlp);
+}
+
+float f_mean_hole_depth (struct board * board, struct t_last_placement * tlp) {
+    return f_hole_depths(board, tlp) / f_n_holes(board, tlp);
+}
+
 float f_max_height_difference (struct board * board, struct t_last_placement * tlp) {
     return f_max_height(board, tlp) - f_min_height(board, tlp);
 }
@@ -510,4 +621,38 @@ float f_n_rows_with_holes (struct board * board, struct t_last_placement * tlp) 
     }
 
     return n_rows_with_holes;
+}
+
+float f_diversity (struct board * board, struct t_last_placement * tlp) {
+    int diversities[5], diversity = 0;
+
+    for (int i = 0; i < 5; i++) {
+        diversities[i] = 0;
+    }
+
+    for (int i = 0; i < board->width - 1; i++) {
+        switch (column_height(board, i) - column_height(board, i + 1)) {
+            case -2:
+                diversities[0] = 1;
+                break;
+            case -1:
+                diversities[1] = 1;
+                break;
+            case 0:
+                diversities[2] = 1;
+                break;
+            case 1:
+                diversities[3] = 1;
+                break;
+            case 2:
+                diversities[4] = 1;
+                break;
+        }
+    }
+
+    for (int i = 0; i < 5; i++) {
+        diversity += diversities[i];
+    }
+
+    return diversity;
 }
