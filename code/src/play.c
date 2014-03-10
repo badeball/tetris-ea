@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "feature.h"
+#include "feature_functions.h"
+#include "feature_helpers.h"
 #include "genotype.h"
 #include "options.h"
 #include "phenotype.h"
@@ -26,7 +27,7 @@ void print_help_text () {
     );
 
     for (int i = 0; i < N_FEATURES; i++) {
-        printf("  %s N (defaults to 0)\n", feature_name(i));
+        printf("  %s N (defaults to 0)\n", features[i].name);
     }
 }
 
@@ -65,8 +66,8 @@ int main (int argc, char **argv) {
             opt.n_piece_lookahead = atoi(argv[++i]);
         } else if (strcmp(argv[i], "-i") == 0) {
             opt.print_board = 1;
-        } else if (index_feature(argv[i]) >= 0) {
-            enable_feature(index_feature(argv[i]), &opt);
+        } else if (feature_exists(argv[i])) {
+            enable_feature(feature_index(argv[i]), &opt);
             phenotype->genotype->feature_weights[opt.n_features_enabled - 1] = atof(argv[++i]);
             phenotype->genotype->feature_enabled[opt.n_features_enabled - 1] = 1;
         } else {

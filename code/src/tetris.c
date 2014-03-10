@@ -7,7 +7,8 @@
 #include <signal.h>
 
 #include "board.h"
-#include "feature.h"
+#include "feature_functions.h"
+#include "feature_helpers.h"
 #include "genotype.h"
 #include "options.h"
 #include "phenotype.h"
@@ -108,7 +109,7 @@ void print_help_text () {
     );
 
     for (int i = 0; i < N_FEATURES; i++) {
-        printf("  %s\n", feature_name(i));
+        printf("  %s\n", features[i].name);
     }
 }
 
@@ -187,8 +188,8 @@ int main (int argc, char **argv) {
             strcmp(argv[i], "--help") == 0) {
             print_help_text();
             return 0;
-        } else if (index_feature(argv[i]) >= 0) {
-            enable_feature(index_feature(argv[i]), &opt);
+        } else if (feature_exists(argv[i])) {
+            enable_feature(feature_index(argv[i]), &opt);
         } else if (strcmp(argv[i], "--f-all") == 0) {
             for (int a = 0; a < N_FEATURES; a++) {
                 enable_feature(a, &opt);

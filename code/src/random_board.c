@@ -5,7 +5,7 @@
 #include "board.h"
 #include "random.h"
 #include "tetromino.h"
-#include "feature.h"
+#include "feature_functions.h"
 
 char* program_name;
 

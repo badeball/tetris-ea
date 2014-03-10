@@ -1,7 +1,6 @@
 #include <stdlib.h>
 
 #include "options.h"
-#include "feature.h"
 
 void enable_feature (int feature_i, struct options * opt) {
     if (opt->feature_enabled[feature_i] == 1) {

@@ -1,7 +1,8 @@
 #include <string.h>
 
 #include "board.h"
-#include "feature.h"
+#include "feature_functions.h"
+#include "feature_helpers.h"
 #include "options.h"
 
 char* program_name;
@@ -16,7 +17,7 @@ void print_help_text () {
     );
 
     for (int i = 0; i < N_FEATURES; i++) {
-        printf("  %s\n", feature_name(i));
+        printf("  %s\n", features[i].name);
     }
 }
 
@@ -36,8 +37,8 @@ int main (int argc, char **argv) {
             return 0;
         } else if (strcmp(argv[i], "-p") == 0) {
             p_board = 1;
-        } else if (index_feature(argv[i]) >= 0) {
-            enable_feature(index_feature(argv[i]), &opt);
+        } else if (feature_exists(argv[i])) {
+            enable_feature(feature_index(argv[i]), &opt);
         } else if (strcmp(argv[i], "--f-all") == 0) {
             for (int a = 0; a < N_FEATURES; a++) {
                 enable_feature(a, &opt);
@@ -71,8 +72,8 @@ int main (int argc, char **argv) {
 
     for (int i = 0; i < N_FEATURES; i++) {
         if (opt.feature_enabled[i]) {
-            if (strlen(feature_name(i)) > max_feature_length) {
-                max_feature_length = strlen(feature_name(i));
+            if (strlen(features[i].name) > max_feature_length) {
+                max_feature_length = strlen(features[i].name);
             }
         }
     }
@@ -82,8 +83,8 @@ int main (int argc, char **argv) {
             printf(
                 "%-*s % .0f\n",
                 max_feature_length, 
-                feature_name(i),
-                (feature_function(i)) (&board, &((struct t_last_placement) {
+                features[i].name,
+                (features[i].function) (&board, &((struct t_last_placement) {
                     .tetromino = &tetrominos[0],
                     .x = 0,
                     .y = 0,

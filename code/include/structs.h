@@ -49,6 +49,14 @@ enum selection {
     SIGMA,
 };
 
+struct feature {
+    char * name;
+    int weights;
+    float (* function) (struct board *, struct t_last_placement *);
+};
+
+struct feature features[N_FEATURES];
+
 struct options {
     int feature_enabled[N_FEATURES];
     int enabled_f_indices[N_FEATURES];

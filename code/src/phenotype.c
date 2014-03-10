@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include "board.h"
-#include "feature.h"
+#include "feature_functions.h"
 #include "genotype.h"
 #include "options.h"
 #include "phenotype.h"
@@ -47,8 +47,8 @@ void write_phenotype (FILE * stream, struct phenotype * phenotype, struct option
     int max_feature_length = 0;
 
     for (int i = 0; i < opt->n_features_enabled; i++) {
-        if (strlen(feature_name(opt->enabled_f_indices[i])) > max_feature_length) {
-            max_feature_length = strlen(feature_name(opt->enabled_f_indices[i]));
+        if (strlen(features[opt->enabled_f_indices[i]].name) > max_feature_length) {
+            max_feature_length = strlen(features[opt->enabled_f_indices[i]].name);
         }
     }
 
@@ -56,7 +56,7 @@ void write_phenotype (FILE * stream, struct phenotype * phenotype, struct option
         if (phenotype->genotype->feature_enabled[i]) {
             fprintf(stream, "%-*s % .2f\n",
                 max_feature_length,
-                feature_name(opt->enabled_f_indices[i]),
+                features[opt->enabled_f_indices[i]].name,
                 phenotype->genotype->feature_weights[i]);
         }
     }
@@ -67,7 +67,7 @@ float board_score (struct board * board, struct phenotype * phenotype, struct t_
 
     for (int i = 0; i < opt->n_features_enabled; i++) {
         if (phenotype->genotype->feature_enabled[i]) {
-            score += phenotype->genotype->feature_weights[i] * (* feature_function(opt->enabled_f_indices[i])) (board, tlp);
+            score += phenotype->genotype->feature_weights[i] * (features[opt->enabled_f_indices[i]].function) (board, tlp);
         }
     }
 

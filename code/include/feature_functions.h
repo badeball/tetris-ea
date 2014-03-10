@@ -1,5 +1,5 @@
-#ifndef FEATURE_H
-#define FEATURE_H
+#ifndef FEATURE_FUNCTIONS_H
+#define FEATURE_FUNCTIONS_H
 
 #include "structs.h"
 

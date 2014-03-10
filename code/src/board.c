@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #include "board.h"
-#include "feature.h"
+#include "feature_functions.h"
 
 struct board * initialize_board (int width, int height) {
     struct board * board = malloc(sizeof(struct board));
