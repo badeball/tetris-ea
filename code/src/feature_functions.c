@@ -123,6 +123,16 @@ float f_deep_well_sum (struct board * new_board, struct board * old_board, struc
     return well_sum;
 }
 
+float f_height_differences (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
+    int sum_differences = 0;
+
+    for (int i = 0; i < new_board->width - 1; i++) {
+        sum_differences += f_column_difference(new_board, old_board, tlp);
+    }
+
+    return sum_differences;
+}
+
 float f_mean_height (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
     int sum = 0;
 
@@ -131,6 +141,22 @@ float f_mean_height (struct board * new_board, struct board * old_board, struct 
     }
 
     return (float) sum / (float) new_board->width;
+}
+
+float f_v_max_height (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
+    return f_max_height(new_board, old_board, tlp) - f_max_height(old_board, new_board, tlp);
+}
+
+float f_v_n_holes (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
+    return f_n_holes(new_board, old_board, tlp) - f_n_holes(old_board, new_board, tlp);
+}
+
+float f_v_height_differences (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
+    return f_height_differences(new_board, old_board, tlp) - f_height_differences(old_board, new_board, tlp);
+}
+
+float f_v_mean_height (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
+    return f_mean_height(new_board, old_board, tlp) - f_mean_height(old_board, new_board, tlp);
 }
 
 float f_removed_lines (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {

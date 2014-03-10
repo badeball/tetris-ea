@@ -35,9 +35,29 @@ struct feature features[N_FEATURES] = {
         .weights = 1,
         .function = &f_deep_well_sum,
     }, {
+        .name = "--f-height-differences",
+        .weights = 1,
+        .function = &f_height_differences,
+    }, {
         .name = "--f-mean-height",
         .weights = 1,
         .function = &f_mean_height,
+    }, {
+        .name = "--f-v-max-height",
+        .weights = 1,
+        .function = &f_v_max_height,
+    }, {
+        .name = "--f-v-n-holes",
+        .weights = 1,
+        .function = &f_v_n_holes,
+    }, {
+        .name = "--f-v-height-differences",
+        .weights = 1,
+        .function = &f_v_height_differences,
+    }, {
+        .name = "--f-v-mean-height",
+        .weights = 1,
+        .function = &f_v_mean_height,
     }, {
         .name = "--f-removed-lines",
         .weights = 1,
