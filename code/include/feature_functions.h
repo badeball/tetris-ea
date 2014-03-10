@@ -9,6 +9,8 @@ float (* feature_function(int feature_i)) (struct board * board, struct t_last_p
 
 float f_max_height            (struct board * board, struct t_last_placement * tlp);
 float f_n_holes               (struct board * board, struct t_last_placement * tlp);
+float f_column_heights        (struct board * board, struct t_last_placement * tlp);
+float f_column_difference     (struct board * board, struct t_last_placement * tlp);
 float f_landing_height        (struct board * board, struct t_last_placement * tlp);
 float f_cell_transitions      (struct board * board, struct t_last_placement * tlp);
 float f_deep_well_sum         (struct board * board, struct t_last_placement * tlp);

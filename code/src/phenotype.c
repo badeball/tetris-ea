@@ -52,12 +52,16 @@ void write_phenotype (FILE * stream, struct phenotype * phenotype, struct option
         }
     }
 
+    int weight_i = 0;
+
     for (int i = 0; i < opt->n_features_enabled; i++) {
         if (phenotype->genotype->feature_enabled[i]) {
-            fprintf(stream, "%-*s % .2f\n",
-                max_feature_length,
-                features[opt->enabled_f_indices[i]].name,
-                phenotype->genotype->feature_weights[i]);
+            for (int a = 0; a < features[opt->enabled_f_indices[i]].weights; a++) {
+                fprintf(stream, "%-*s % .2f\n",
+                    max_feature_length,
+                    features[opt->enabled_f_indices[i]].name,
+                    phenotype->genotype->feature_weights[weight_i++]);
+            }
         }
     }
 }
@@ -65,9 +69,13 @@ void write_phenotype (FILE * stream, struct phenotype * phenotype, struct option
 float board_score (struct board * board, struct phenotype * phenotype, struct t_last_placement * tlp, struct options * opt) {
     float score = 0;
 
+    int weight_i = 0;
+
     for (int i = 0; i < opt->n_features_enabled; i++) {
         if (phenotype->genotype->feature_enabled[i]) {
-            score += phenotype->genotype->feature_weights[i] * (features[opt->enabled_f_indices[i]].function) (board, tlp);
+            for (int a = 0; a < features[opt->enabled_f_indices[i]].weights; a++) {
+                score += phenotype->genotype->feature_weights[weight_i++] * (features[opt->enabled_f_indices[i]].function) (board, tlp);
+            }
         }
     }
 

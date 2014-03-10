@@ -1,7 +1,7 @@
 #ifndef STRUCTS_H
 #define STRUCTS_H
 
-#define N_FEATURES 25
+#define N_FEATURES 27
 
 struct genotype {
     float * feature_weights;
@@ -61,6 +61,7 @@ struct options {
     int feature_enabled[N_FEATURES];
     int enabled_f_indices[N_FEATURES];
     int n_features_enabled;
+    int n_weights_enabled;
 
     int verbose;
     int population_size;

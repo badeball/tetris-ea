@@ -21,6 +21,7 @@
 
 struct options opt = {
     .n_features_enabled    = 0,
+    .n_weights_enabled     = 0,
 
     .verbose               = 0,
     .population_size       = 20,
@@ -188,15 +189,23 @@ int main (int argc, char **argv) {
             strcmp(argv[i], "--help") == 0) {
             print_help_text();
             return 0;
-        } else if (feature_exists(argv[i])) {
+        } else if (feature_exists(argv[i]) || strcmp(argv[i], "--f-all") == 0) {
+            // No operation. These are handled below.
+        } else {
+            printf("Unknown argument '%s'.\n", argv[i]);
+            return 1;
+        }
+    }
+
+    initialize_dynamic_weight_numbers(&opt);
+
+    for (int i = 1; i < argc; i++) {
+        if (feature_exists(argv[i])) {
             enable_feature(feature_index(argv[i]), &opt);
         } else if (strcmp(argv[i], "--f-all") == 0) {
             for (int a = 0; a < N_FEATURES; a++) {
                 enable_feature(a, &opt);
             }
-        } else {
-            printf("Unknown argument '%s'.\n", argv[i]);
-            return 1;
         }
     }
 

@@ -26,6 +26,7 @@ int main (int argc, char **argv) {
 
     struct options opt = {
         .n_features_enabled = 0,
+        .n_weights_enabled = 0,
     };
 
     int p_board = 0;
@@ -62,6 +63,11 @@ int main (int argc, char **argv) {
         return 1;
     }
 
+    opt.board_width = board.width;
+    opt.board_height = board.height;
+
+    initialize_dynamic_weight_numbers(&opt);
+
     if (p_board) {
         print_board(stdout, &board);
     }
@@ -80,15 +86,17 @@ int main (int argc, char **argv) {
 
     for (int i = 0; i < N_FEATURES; i++) {
         if (opt.feature_enabled[i]) {
-            printf(
-                "%-*s % .0f\n",
-                max_feature_length, 
-                features[i].name,
-                (features[i].function) (&board, &((struct t_last_placement) {
-                    .tetromino = &tetrominos[0],
-                    .x = 0,
-                    .y = 0,
-                })));
+            for (int a = 0; a < features[i].weights; a++) {
+                printf(
+                    "%-*s % .1f\n",
+                    max_feature_length,
+                    features[i].name,
+                    (features[i].function) (&board, &((struct t_last_placement) {
+                        .tetromino = &tetrominos[0],
+                        .x = 0,
+                        .y = 0,
+                    })));
+            }
         }
     }
 

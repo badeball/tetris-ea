@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdlib.h>
 
 #include "board.h"
 #include "feature_functions.h"
@@ -42,6 +43,30 @@ float f_n_holes (struct board * board, struct t_last_placement * tlp) {
     }
 
     return n_holes;
+}
+
+int current_column = 0;
+
+float f_column_heights (struct board * board, struct t_last_placement * tlp) {
+    int height = column_height(board, current_column++);
+
+    if (current_column == board->width) {
+        current_column = 0;
+    }
+
+    return height;
+}
+
+float f_column_difference (struct board * board, struct t_last_placement * tlp) {
+    int difference = abs(column_height(board, current_column) - column_height(board, current_column + 1));
+
+    current_column++;
+
+    if (current_column == board->width - 1) {
+        current_column = 0;
+    }
+
+    return difference;
 }
 
 float f_landing_height (struct board * board, struct t_last_placement * tlp) {

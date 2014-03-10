@@ -40,16 +40,13 @@ int main (int argc, char **argv) {
     struct options opt = {
         .seedp              = time(NULL),
         .n_features_enabled = 0,
+        .n_weights_enabled  = 0,
         .n_trials           = 10,
         .board_width        = 10,
         .board_height       = 20,
         .print_board        = 0,
         .n_piece_lookahead  = 0,
     };
-
-    struct phenotype * phenotype =
-        initialize_phenotype(
-            initialize_genotype(&(struct options) { .n_features_enabled = N_FEATURES }));
 
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-h") == 0 ||
@@ -67,12 +64,32 @@ int main (int argc, char **argv) {
         } else if (strcmp(argv[i], "-i") == 0) {
             opt.print_board = 1;
         } else if (feature_exists(argv[i])) {
-            enable_feature(feature_index(argv[i]), &opt);
-            phenotype->genotype->feature_weights[opt.n_features_enabled - 1] = atof(argv[++i]);
-            phenotype->genotype->feature_enabled[opt.n_features_enabled - 1] = 1;
+            enable_feature(feature_index(argv[i++]), &opt);
         } else {
             printf("Unknown argument '%s'.\n", argv[i]);
             return 1;
+        }
+    }
+
+    initialize_dynamic_weight_numbers(&opt);
+
+    struct phenotype * phenotype =
+        initialize_phenotype(
+            initialize_genotype(&opt));
+
+    int weight_i = 0;
+
+    for (int i = 0; i < opt.n_features_enabled; i++) {
+        phenotype->genotype->feature_enabled[i] = 1;
+    }
+
+    for (int i = 1; i < argc; i++) {
+        if (feature_exists(argv[i])) {
+            for (int a = 0; a < features[feature_index(argv[i])].weights; a++) {
+                phenotype->genotype->feature_weights[weight_i++] = atof(argv[i + a + 1]);
+            }
+
+            i += features[feature_index(argv[i])].weights;
         }
     }
 
