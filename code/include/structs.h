@@ -52,7 +52,7 @@ enum selection {
 struct feature {
     char * name;
     int weights;
-    float (* function) (struct board *, struct t_last_placement *);
+    float (* function) (struct board *, struct board *, struct t_last_placement *);
 };
 
 struct feature features[N_FEATURES];

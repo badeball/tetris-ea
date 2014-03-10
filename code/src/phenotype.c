@@ -66,7 +66,7 @@ void write_phenotype (FILE * stream, struct phenotype * phenotype, struct option
     }
 }
 
-float board_score (struct board * board, struct phenotype * phenotype, struct t_last_placement * tlp, struct options * opt) {
+float board_score (struct board * new_board, struct board * old_board, struct phenotype * phenotype, struct t_last_placement * tlp, struct options * opt) {
     float score = 0;
 
     int weight_i = 0;
@@ -74,7 +74,7 @@ float board_score (struct board * board, struct phenotype * phenotype, struct t_
     for (int i = 0; i < opt->n_features_enabled; i++) {
         if (phenotype->genotype->feature_enabled[i]) {
             for (int a = 0; a < features[opt->enabled_f_indices[i]].weights; a++) {
-                score += phenotype->genotype->feature_weights[weight_i++] * (features[opt->enabled_f_indices[i]].function) (board, tlp);
+                score += phenotype->genotype->feature_weights[weight_i++] * (features[opt->enabled_f_indices[i]].function) (new_board, old_board, tlp);
             }
         }
     }
@@ -204,7 +204,7 @@ void _look_ahead(struct future * f, struct board * board, struct phenotype * phe
 
                     remove_lines(boards[board_i], &tlp);
 
-                    alt->score = board_score(boards[board_i], phenotype, &tlp, opt);
+                    alt->score = board_score(boards[board_i], board, phenotype, &tlp, opt);
 
                     free(tlp.lines_removed);
 
