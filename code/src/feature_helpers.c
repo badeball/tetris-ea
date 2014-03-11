@@ -137,7 +137,23 @@ struct feature features[N_FEATURES] = {
     }
 };
 
+int * column_heigths;
+int features_cached[N_FEATURES];
+float cached_feature_values[N_FEATURES];
+
+void reset_feature_caches (struct options * opt) {
+    for (int i = 0; i < opt->board_width; i++) {
+        column_heigths[i] = -1;
+    }
+
+    for (int i = 0; i < N_FEATURES; i++) {
+        features_cached[i] = 0;
+    }
+}
+
 void initialize_dynamic_weight_numbers (struct options * opt) {
+    column_heigths = malloc(sizeof(int) * opt->board_width);
+
     features[feature_index("--f-column-heights")].weights = opt->board_width;
     features[feature_index("--f-column-difference")].weights = opt->board_width - 1;
 }
@@ -158,14 +174,27 @@ int feature_index (char * name) {
             return i;
         }
     }
+
+    exit(1);
+}
+
+float call_feature (int feature_i, struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
+    if (features_cached[feature_i] == 0 || features[feature_i].weights > 1) {
+        cached_feature_values[feature_i] = (features[feature_i].function) (new_board, old_board, tlp);
+        features_cached[feature_i] = 1;
+    }
+
+    return cached_feature_values[feature_i];
 }
 
 int column_height (struct board * board, int column) {
-    for (int y = 0; y < board->height; y++) {
-        if (*address_tile(column, y, board) == 1) {
-            return board->height - y;
+    if (column_heigths[column] == -1) {
+        for (int y = 0; y < board->height; y++) {
+            if (*address_tile(column, y, board) == 1) {
+                column_heigths[column] = board->height - y;
+            }
         }
     }
 
-    return 0;
+    return column_heigths[column];
 }

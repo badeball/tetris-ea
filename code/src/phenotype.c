@@ -5,6 +5,7 @@
 
 #include "board.h"
 #include "feature_functions.h"
+#include "feature_helpers.h"
 #include "genotype.h"
 #include "options.h"
 #include "phenotype.h"
@@ -71,10 +72,12 @@ float board_score (struct board * new_board, struct board * old_board, struct ph
 
     int weight_i = 0;
 
+    reset_feature_caches(opt);
+
     for (int i = 0; i < opt->n_features_enabled; i++) {
         if (phenotype->genotype->feature_enabled[i]) {
             for (int a = 0; a < features[opt->enabled_f_indices[i]].weights; a++) {
-                score += phenotype->genotype->feature_weights[weight_i++] * (features[opt->enabled_f_indices[i]].function) (new_board, old_board, tlp);
+                score += phenotype->genotype->feature_weights[weight_i++] * call_feature(opt->enabled_f_indices[i], new_board, old_board, tlp);
             }
         }
     }
