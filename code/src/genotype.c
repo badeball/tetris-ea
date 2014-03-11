@@ -35,7 +35,7 @@ void randomize_genotype (struct genotype* g, struct options* opt) {
     }
 
     for (int i = 0; i < opt->n_features_enabled; i++) {
-        g->feature_enabled[i] = l_rand(opt) > (RAND_MAX / 3) * 2 ? 1 : 0;
+        g->feature_enabled[i] = l_rand(opt) < RAND_MAX * opt->feature_enable_rate ? 1 : 0;
     }
 }
 
@@ -126,7 +126,7 @@ void mutate_genotype (struct genotype* g, struct options* opt) {
 
     for (int i = 0; i < opt->n_features_enabled; i++) {
         if (l_rand(opt) > RAND_MAX * opt->mutation_rate) {
-            g->feature_enabled[i] += l_rand(opt) > (RAND_MAX / 3) * 2 ? 1 : 0;
+            g->feature_enabled[i] += l_rand(opt) < RAND_MAX * opt->feature_enable_rate ? 1 : 0;
         }
     }
 }

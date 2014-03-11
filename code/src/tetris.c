@@ -42,6 +42,7 @@ struct options opt = {
     .randomization_range   = 100,
     .mutation_range        = 100,
 
+    .feature_enable_rate               = 1.f / 6.f,
     .mutation_rate                     = 0.995,
     .crossover_rate                    = 0.5,
     .tournament_group_random_selection = 0.1,
@@ -99,6 +100,11 @@ void print_help_text () {
         "  --mutation-range n (defaults to 100)\n"
         "                      Determines the range of value that is added to a weight\n"
         "                      during mutation.\n"
+        "  --feature-enable-rate F (defaults to 1 / 6)\n"
+        "                      Determines the probability of a feature to be enabled\n"
+        "                      during randomization and mutation. The reason for a\n"
+        "                      seemingly low number is that there is quite a lot of\n"
+        "                      features.\n"
         "  --multi-threading   calculate fitness values in parallel by multi-threading\n"
         "  -l or --log-dir     specify the location for run logs\n"
         "  --no-log            do not log results (-i or --no-log needs to be defined)\n"
@@ -175,6 +181,8 @@ int main (int argc, char **argv) {
             opt.randomization_range = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--mutation-range") == 0) {
             opt.mutation_range = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--feature-enable-rate") == 0) {
+            opt.feature_enable_rate = atof(argv[++i]);
         } else if (strcmp(argv[i], "--elitism") == 0) {
             opt.elitism = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--multi-threading") == 0) {

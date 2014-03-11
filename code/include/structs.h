@@ -82,6 +82,7 @@ struct options {
     int randomization_range;
     int mutation_range;
 
+    float feature_enable_rate;
     float mutation_rate;
     float crossover_rate;
     float tournament_group_random_selection;
