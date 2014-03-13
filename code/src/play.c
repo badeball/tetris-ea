@@ -1,12 +1,15 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include <mpi.h>
 
 #include "feature_functions.h"
 #include "feature_helpers.h"
 #include "genotype.h"
 #include "options.h"
 #include "phenotype.h"
+
+#define MASTER_RANK 0
 
 char* program_name;
 
@@ -101,30 +104,95 @@ int main (int argc, char **argv) {
     if (opt.print_board) {
         phenotype_fitness(phenotype, &opt);
     } else {
-        printf("The following phenotype has been initialized.\n");
-        write_phenotype(stdout, phenotype, &opt);
+        int rank;
 
-        int sum = 0;
+        MPI_Init(&argc, &argv);
+        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-        for (int i = 0; i < opt.n_trials; i++) {
-            int score = phenotype_fitness(phenotype, &opt);
+        opt.seedp += rank * 7; // Mulitple of 7 gives the addition some moment.
 
-            printf("Play %d. resulted in a score of %d.\n", i + 1, score);
+        if (rank == MASTER_RANK) {
+            printf("The following phenotype has been initialized.\n");
+            write_phenotype(stdout, phenotype, &opt);
 
-            sum += score;
+            int sum = 0,
+                n_workers,
+                n_trials_scheduled = 0,
+                n_workers_let_down = 0;
+
+            MPI_Comm_size(MPI_COMM_WORLD, &n_workers);
+
+            while (n_workers - 1 > n_workers_let_down) {
+                int request;
+
+                MPI_Status status;
+
+                MPI_Recv(
+                    &request, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG,
+                    MPI_COMM_WORLD, &status);
+
+                if (request == -1) {
+                    // A worker is requestion permission to perform a calculations.
+
+                    int result;
+
+                    if (opt.n_trials > n_trials_scheduled) {
+                        // The worker is given permission to perform a calculation.
+                        n_trials_scheduled++;
+                        result = 1;
+                    } else {
+                        // The worker is denied permission to perform a calculation.
+                        n_workers_let_down++;
+                        result = 0;
+                    }
+
+                    MPI_Send(
+                        &result, 1, MPI_INT, status.MPI_SOURCE, 0, MPI_COMM_WORLD);
+                } else {
+                    // A worker is returning a result of a calculation.
+                    sum += request;
+                }
+            }
+
+            end = clock();
+
+            double seconds = (double)(end - begin) / CLOCKS_PER_SEC;
+
+            if (opt.n_trials > 1) {
+                printf("The average score of %d trials is %d.\n", opt.n_trials, sum / opt.n_trials);
+                printf("Total cleared lines was %'llu.\n", sum);
+            }
+
+            printf("Execution finished after %.2f seconds.\n", seconds);
+            printf("This amounts to %.2f cleared lines per second.\n", sum / seconds);
+        } else {
+            while (1) {
+                int request = -1,
+                    result;
+
+                MPI_Send(
+                    &request, 1, MPI_INT, MASTER_RANK, 0, MPI_COMM_WORLD);
+
+                MPI_Recv(
+                    &result, 1, MPI_INT, MASTER_RANK, MPI_ANY_TAG,
+                    MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+                if (result == 1) {
+                    // Permission is given to perform a calculation.
+                    int score = phenotype_fitness(phenotype, &opt);
+
+                    printf("A play resulted in a score of %d.\n", score);
+
+                    MPI_Send(
+                        &score, 1, MPI_INT, MASTER_RANK, 0, MPI_COMM_WORLD);
+                } else {
+                    // Permission is denied and the worker can terminate.
+                    break;
+                }
+            }
         }
 
-        end = clock();
-
-        double seconds = (double)(end - begin) / CLOCKS_PER_SEC;
-
-        if (opt.n_trials > 1) {
-            printf("The average score of %d trials is %d.\n", opt.n_trials, sum / opt.n_trials);
-            printf("Total cleared lines was %'llu.\n", sum);
-        }
-
-        printf("Execution finished after %.2f seconds.\n", seconds);
-        printf("This amounts to %.2f cleared lines per second.\n", sum / seconds);
+        MPI_Finalize();
     }
 
     free_phenotype(phenotype);
