@@ -320,16 +320,16 @@ float f_cumulative_wells_dell (struct board * new_board, struct board * old_boar
     return cumulative_well_sum;
 }
 
+int series_sum (int n) {
+    if (n == 0) {
+        return 0;
+    } else {
+        return n * (n + 1) / 2;
+    }
+}
+
 float f_cumulative_wells_fast (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
     int cumulative_well_sum = 0;
-
-    int series_sum (int n) {
-        if (n == 0) {
-            return 0;
-        } else {
-            return n * (n + 1) / 2;
-        }
-    }
 
     for (int x = 0; x < new_board->width; x++) {
         for (int y = 0; y < new_board->height; y++) {

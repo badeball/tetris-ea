@@ -138,6 +138,24 @@ void sigint_handle (int signal) {
     user_exit = 1;
 }
 
+int all_trials (int * trials, struct options * opt) {
+    for (int a = 0; a < opt->population_size - opt->elitism; a++) {
+        if (trials[a] < opt->n_trials) {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+int unfinished_individual (int * trials, struct options * opt) {
+    for (int a = 0; a < opt->population_size - opt->elitism; a++) {
+        if (trials[a] < opt->n_trials) {
+            return a;
+        }
+    }
+}
+
 int main (int argc, char **argv) {
     clock_t begin = clock(),
             end;
@@ -340,28 +358,7 @@ int main (int argc, char **argv) {
                 finished_trials_per_individual[a] = 0;
             }
 
-            int tf (int * trials) {
-                for (int a = 0; a < opt.population_size - opt.elitism; a++) {
-                    if (trials[a] < opt.n_trials) {
-                        return 0;
-                    }
-                }
-
-                return 1;
-            }
-
-            int all_trials_scheduled () { return tf(scheduled_trials_per_individual); }
-            int all_trials_finished () { return tf(finished_trials_per_individual); }
-
-            int unfinished_individual () {
-                for (int a = 0; a < opt.population_size - opt.elitism; a++) {
-                    if (scheduled_trials_per_individual[a] < opt.n_trials) {
-                        return a;
-                    }
-                }
-            }
-
-            while (!all_trials_finished()) {
+            while (!all_trials(finished_trials_per_individual, &opt)) {
                 int request;
 
                 MPI_Status status;
@@ -371,12 +368,12 @@ int main (int argc, char **argv) {
                     MPI_COMM_WORLD, &status);
 
                 if (status.MPI_TAG == CALC_PERM_TAG) {
-                    if (all_trials_scheduled()) {
+                    if (all_trials(scheduled_trials_per_individual, &opt)) {
                         MPI_Send(
                             &zero, 1, MPI_INT, status.MPI_SOURCE, CALC_PERM_TAG,
                             MPI_COMM_WORLD);
                     } else {
-                        int individual = unfinished_individual();
+                        int individual = unfinished_individual(scheduled_trials_per_individual, &opt);
 
                         scheduled_trials_per_individual[individual]++;
                         scheduled_individual_per_worker[status.MPI_SOURCE] = individual;
