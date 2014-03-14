@@ -167,19 +167,7 @@ float f_v_mean_height (struct board * new_board, struct board * old_board, struc
 }
 
 float f_removed_lines (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
-    int lines_removed = 0;
-
-    for (int y = 0; y < new_board->height; y++) {
-        for (int x = 0; x < new_board->width; x++) {
-            if (*address_tile(x, y, new_board) == 0) {
-                break;
-            } else if (x == new_board->width - 1) {
-                lines_removed++;
-            }
-        }
-    }
-
-    return lines_removed;
+    return tlp->n_lines_removed;
 }
 
 float f_weighted_blocks (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
