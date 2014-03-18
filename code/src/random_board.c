@@ -45,7 +45,7 @@ int main (int argc, char **argv) {
         }
     }
 
-    struct options opt = { .seedp = time(NULL) };
+    struct options opt = { .seedp = seed() };
 
     struct board * board = initialize_board(width, height);
 

@@ -15,6 +15,7 @@
 #include "options.h"
 #include "phenotype.h"
 #include "population.h"
+#include "random.h"
 #include "selection.h"
 #include "tetromino.h"
 #include "threading.h"
@@ -160,7 +161,7 @@ int main (int argc, char **argv) {
     clock_t begin = clock(),
             end;
 
-    opt.seedp = time(NULL);
+    opt.seedp = seed();
 
     program_name = argv[0];
 
@@ -252,8 +253,6 @@ int main (int argc, char **argv) {
 
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
-    opt.seedp += rank * 7; // Mulitple of 7 gives the addition some moment.
 
     if (rank == MASTER_RANK) {
         int n_workers;

@@ -8,6 +8,7 @@
 #include "genotype.h"
 #include "options.h"
 #include "phenotype.h"
+#include "random.h"
 
 #define MASTER_RANK 0
 
@@ -41,7 +42,7 @@ int main (int argc, char **argv) {
     program_name = argv[0];
 
     struct options opt = {
-        .seedp              = time(NULL),
+        .seedp              = seed(),
         .n_features_enabled = 0,
         .n_weights_enabled  = 0,
         .n_trials           = 10,
@@ -108,8 +109,6 @@ int main (int argc, char **argv) {
 
         MPI_Init(&argc, &argv);
         MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
-        opt.seedp += rank * 7; // Mulitple of 7 gives the addition some moment.
 
         if (rank == MASTER_RANK) {
             printf("The following phenotype has been initialized.\n");

@@ -4,5 +4,6 @@
 #include "structs.h"
 
 int l_rand (struct options* opt);
+int seed ();
 
 #endif
