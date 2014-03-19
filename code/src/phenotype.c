@@ -2,6 +2,7 @@
 #include <limits.h>
 #include <unistd.h>
 #include <string.h>
+#include <time.h>
 
 #include "board.h"
 #include "feature_functions.h"
@@ -85,8 +86,46 @@ float board_score (struct board * new_board, struct board * old_board, struct ph
     return score;
 }
 
+unsigned long long time_per_feature[N_FEATURES];
+
+char * feature_names[N_FEATURES] = {
+    "Max height",
+    "Holes",
+    "Column height",
+    "Column difference",
+    "Landing height",
+    "Cell transitions",
+    "Deep wells",
+    "Height differences",
+    "Mean height",
+    "{/Symbol D} max height",
+    "{/Symbol D} holes",
+    "{/Symbol D} height differences",
+    "{/Symbol D} mean height",
+    "Removed lines",
+    "Height weighted cells",
+    "Wells",
+    "Full cells",
+    "Eroded piece cells",
+    "Row transitions",
+    "Column transitions",
+    "Cumulative wells (dell)",
+    "Cumulative wells (fast)",
+    "Min height",
+    "Max - mean height",
+    "Mean - min height",
+    "Mean hole depth",
+    "Max height difference",
+    "Adjacent column holes",
+    "Maximum well depth",
+    "Hole depth",
+    "Rows with holes",
+    "Pattern diversiy"
+};
+
 int phenotype_fitness (struct phenotype * phenotype, struct options* opt) {
-    int fitness = 0;
+    int fitness = 0,
+        pieces = 0;
 
     struct board * board = initialize_board(opt->board_width, opt->board_height);
 
@@ -98,14 +137,41 @@ int phenotype_fitness (struct phenotype * phenotype, struct options* opt) {
         N_TETROMINO(&next_tetrominos[i], random_t);
     }
 
+    for (int i = 0; i < N_FEATURES; i++) {
+        time_per_feature[i] = 0;
+    }
+
     while (1) {
+        struct board * old_board = copy_board(board);
+        struct t_last_placement tlp;
+
         // Place the next tetromino on the board. If the placement was unsuccessful, exit the loop.
-        if (continue_board(board, phenotype, next_tetrominos, opt) == 1) {
+        if (continue_board(board, phenotype, next_tetrominos, &tlp, opt) == 1) {
             break;
         }
 
+        pieces++;
+
         // Remove lines and add to the current fitness value.
-        fitness += remove_lines(board, NULL);
+        fitness += remove_lines(board, &tlp);
+
+        for (int i = 0; i < N_FEATURES; i++) {
+            reset_feature_caches(opt);
+
+            clock_t begin = clock(),
+                    end;
+
+            for (int a = 0; a < features[i].weights; a++) {
+                call_feature(i, board, old_board, &tlp);
+            }
+
+            end = clock();
+
+            time_per_feature[i] += end - begin;
+        }
+
+        free_board(old_board);
+        free(tlp.lines_removed);
 
         // Fill the lookahead with a new tetromino.
         for (int i = 0; i < opt->n_piece_lookahead; i++) {
@@ -118,6 +184,23 @@ int phenotype_fitness (struct phenotype * phenotype, struct options* opt) {
 
         if (opt->print_board) {
             print_board(stdout, board);
+        }
+
+        if (pieces == 1000000) {
+            printf("Placed 1,000,000 pieces!\n");
+
+            unsigned long long accumulated_time = 0;
+
+            for (int i = 0; i < N_FEATURES; i++) {
+                accumulated_time += time_per_feature[i];
+
+                printf("\"%s\" %f %f\n",
+                    feature_names[i],
+                    (float) ((double) accumulated_time / CLOCKS_PER_SEC),
+                    (float) ((double) time_per_feature[i] / CLOCKS_PER_SEC));
+            }
+
+            exit(0);
         }
     }
 
@@ -234,7 +317,7 @@ void look_ahead(struct future * f, struct board * board, struct phenotype* pheno
     _look_ahead(f, board, phenotype, 0, NULL, next_tetrominos, opt);
 }
 
-int continue_board(struct board * board, struct phenotype* phenotype, int next_tetrominos[], struct options* opt) {
+int continue_board(struct board * board, struct phenotype* phenotype, int next_tetrominos[], struct t_last_placement * tlp, struct options* opt) {
     struct future f = {
         .size = 0,
     };
@@ -255,10 +338,15 @@ int continue_board(struct board * board, struct phenotype* phenotype, int next_t
 
         free(f.alternatives);
 
+        int y;
+
         place_tetromino(
             board,
             &tetrominos[next_tetrominos[0] + max_alt.rotation_i],
-            max_alt.position_i, NULL);
+            max_alt.position_i, &y);
+
+        tlp->y = y;
+        tlp->x = max_alt.position_i;
 
         return 0;
     }

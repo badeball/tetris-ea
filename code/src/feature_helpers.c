@@ -179,10 +179,10 @@ int feature_index (char * name) {
 }
 
 float call_feature (int feature_i, struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
-    if (features_cached[feature_i] == 0 || features[feature_i].weights > 1) {
+    //if (features_cached[feature_i] == 0 || features[feature_i].weights > 1) {
         cached_feature_values[feature_i] = (features[feature_i].function) (new_board, old_board, tlp);
         features_cached[feature_i] = 1;
-    }
+    //}
 
     return cached_feature_values[feature_i];
 }

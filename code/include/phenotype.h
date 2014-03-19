@@ -13,6 +13,6 @@ void write_phenotype (FILE * stream, struct phenotype * phenotype, struct option
 float board_score (struct board * new_board, struct board * old_board, struct phenotype* phenotype, struct t_last_placement * tlp, struct options * opt);
 int phenotype_fitness (struct phenotype* phenotype, struct options* opt);
 int average_phenotype_fitness (struct phenotype* phenotype, struct options* opt);
-int continue_board(struct board * board, struct phenotype* phenotype, int next_tetrominos[], struct options* opt);
+int continue_board(struct board * board, struct phenotype* phenotype, int next_tetrominos[], struct t_last_placement * tlp, struct options* opt);
 
 #endif
