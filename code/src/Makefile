@@ -6,7 +6,7 @@ ODIR=obj
 LDIR=../lib
 BINDIR=../bin
 
-LIBS=-lm
+LIBS=-lm -lgsl -lgslcblas -lmpi
 
 EXECUTABLES=tetris random_board analyze_board play
 

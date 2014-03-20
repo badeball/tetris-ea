@@ -26,7 +26,7 @@ struct phenotype* select_by_tournament (struct population* population, struct op
     struct population* tournament_group = sample_population(population, opt->tournament_group_size, opt);
     struct phenotype* selected_phenotype;
 
-    if (l_rand(opt) > RAND_MAX * opt->tournament_group_random_selection) {
+    if (f_rand(opt) > opt->tournament_group_random_selection) {
         selected_phenotype = select_best_individual(tournament_group);
     } else {
         selected_phenotype = tournament_group->individuals[0];
@@ -42,7 +42,7 @@ struct phenotype** select_with_cumulation (struct population* population, int n,
 
     float sum      = cumulation[population->size - 1];
     float distance = (float) sum / (float) n;
-    float start    = (float) (l_rand(opt) * sum / RAND_MAX) / (float) n;
+    float start    = (float) (f_rand(opt) * sum) / (float) n;
 
     for (int i = 0, a = 0; i < n; i++) {
         while (cumulation[a] < start + i * distance) {

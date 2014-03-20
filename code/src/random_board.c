@@ -45,7 +45,9 @@ int main (int argc, char **argv) {
         }
     }
 
-    struct options opt = { .seedp = seed() };
+    struct options opt;
+
+    initalize_rng(&opt);
 
     struct board * board = initialize_board(width, height);
 
@@ -57,7 +59,7 @@ int main (int argc, char **argv) {
         place_tetromino(
             board,
             &tetromino,
-            l_rand(&opt) % (board->width - 4 + 1 + tetromino.p_left + tetromino.p_right) - tetromino.p_left,
+            l_rand(0, board->width - 4 + 1 + tetromino.p_left + tetromino.p_right, &opt) - tetromino.p_left,
             NULL);
     }
 

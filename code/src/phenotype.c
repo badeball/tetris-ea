@@ -93,7 +93,7 @@ int phenotype_fitness (struct phenotype * phenotype, struct options* opt) {
     int next_tetrominos[opt->n_piece_lookahead + 1];
 
     for (int i = 0; i < opt->n_piece_lookahead + 1; i++) {
-        int random_t = l_rand(opt) % 7;
+        int random_t = l_rand(0, 7, opt);
 
         N_TETROMINO(&next_tetrominos[i], random_t);
     }
@@ -112,7 +112,7 @@ int phenotype_fitness (struct phenotype * phenotype, struct options* opt) {
             next_tetrominos[i] = next_tetrominos[i + 1];
         }
 
-        int random_t = l_rand(opt) % 7;
+        int random_t = l_rand(0, 7, opt);
 
         N_TETROMINO(&next_tetrominos[opt->n_piece_lookahead], random_t);
 

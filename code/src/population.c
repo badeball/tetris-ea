@@ -40,7 +40,7 @@ struct population* sample_population (struct population* p, int n, struct option
     int r;
 
     for (int i = 0; i < n; i++) {
-        r = i + l_rand(opt) % (p->size - i);
+        r = i + l_rand(0, p->size - i, opt);
 
         sample->individuals[i] = population_copy[r];
         population_copy[r] = population_copy[i];
@@ -66,10 +66,10 @@ struct phenotype* select_best_individual (struct population* p) {
 struct phenotype* mate_individuals (struct phenotype* phenotype_1, struct phenotype* phenotype_2, struct options* opt) {
     struct phenotype* offspring;
 
-    if (l_rand(opt) < RAND_MAX * opt->crossover_rate) {
+    if (f_rand(opt) < opt->crossover_rate) {
         offspring = initialize_phenotype(crossover_genotypes(phenotype_1->genotype, phenotype_2->genotype, opt));
     } else {
-        offspring = copy_phenotype(l_rand(opt) > RAND_MAX / 2 ? phenotype_1 : phenotype_2, opt);
+        offspring = copy_phenotype(b_rand(opt) ? phenotype_1 : phenotype_2, opt);
     }
 
     mutate_genotype(offspring->genotype, opt);

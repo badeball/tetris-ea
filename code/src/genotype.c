@@ -31,11 +31,11 @@ struct genotype* copy_genotype (struct genotype* genotype, struct options* opt) 
 
 void randomize_genotype (struct genotype* g, struct options* opt) {
     for (int i = 0; i < opt->n_weights_enabled; i++) {
-        g->feature_weights[i] = l_rand(opt) % opt->randomization_range - opt->randomization_range / 2;
+        g->feature_weights[i] = l_rand(- opt->randomization_range / 2 - 1, opt->randomization_range / 2 + 1, opt);
     }
 
     for (int i = 0; i < opt->n_features_enabled; i++) {
-        g->feature_enabled[i] = l_rand(opt) < RAND_MAX * opt->feature_enable_rate ? 1 : 0;
+        g->feature_enabled[i] = f_rand(opt) < opt->feature_enable_rate ? 1 : 0;
     }
 }
 
@@ -55,7 +55,7 @@ struct genotype* crossover_genotypes (struct genotype* g_1, struct genotype* g_2
         for (int i = 0; i < opt->n_features_enabled; i++) {
             struct genotype * selecting_from_genotype;
 
-            if (l_rand(opt) > RAND_MAX / 2) {
+            if (b_rand(opt)) {
                 selecting_from_genotype = g_1;
             } else {
                 selecting_from_genotype = g_2;
@@ -80,7 +80,7 @@ struct genotype* crossover_genotypes (struct genotype* g_1, struct genotype* g_2
         int r;
 
         for (int i = 0; i < opt->crossover_points; i++) {
-            r = i + l_rand(opt) % (opt->n_features_enabled - 1 - i);
+            r = i + l_rand(0, opt->n_features_enabled - 1 - i, opt);
 
             selected_points[i] = possible_points[r];
             possible_points[r] = possible_points[i];
@@ -88,7 +88,7 @@ struct genotype* crossover_genotypes (struct genotype* g_1, struct genotype* g_2
 
         qsort(selected_points, opt->crossover_points, sizeof(int), intcmp);
 
-        int selecting_from = l_rand(opt) % 2,
+        int selecting_from = b_rand(opt),
             at_point = 0,
             weight_i = 0;
 
@@ -119,14 +119,14 @@ struct genotype* crossover_genotypes (struct genotype* g_1, struct genotype* g_2
 
 void mutate_genotype (struct genotype* g, struct options* opt) {
     for (int i = 0; i < opt->n_weights_enabled; i++) {
-        if (l_rand(opt) > RAND_MAX * opt->mutation_rate) {
-            g->feature_weights[i] += l_rand(opt) % opt->mutation_range - opt->mutation_range / 2;
+        if (f_rand(opt) > opt->mutation_rate) {
+            g->feature_weights[i] += l_rand(- opt->mutation_range / 2 - 1, opt->mutation_range / 2 + 1, opt);
         }
     }
 
     for (int i = 0; i < opt->n_features_enabled; i++) {
-        if (l_rand(opt) > RAND_MAX * opt->mutation_rate) {
-            g->feature_enabled[i] += l_rand(opt) < RAND_MAX * opt->feature_enable_rate ? 1 : 0;
+        if (f_rand(opt) > opt->mutation_rate) {
+            g->feature_enabled[i] += f_rand(opt) < opt->feature_enable_rate ? 1 : 0;
         }
     }
 }

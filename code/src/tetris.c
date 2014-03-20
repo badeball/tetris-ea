@@ -161,7 +161,7 @@ int main (int argc, char **argv) {
     clock_t begin = clock(),
             end;
 
-    opt.seedp = seed();
+    initalize_rng(&opt);
 
     program_name = argv[0];
 

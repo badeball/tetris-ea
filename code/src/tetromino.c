@@ -243,10 +243,10 @@ int place_tetromino (struct board * board, struct tetromino * tetromino, int pos
 
 int random_tetromino (struct options* opt) {
     int tetromino, rotations,
-        random_t = l_rand(opt) % 7;
+        random_t = l_rand(0, 7, opt);
 
     N_TETROMINO(&tetromino, random_t);
     N_ROTATIONS(&rotations, tetromino);
 
-    return tetromino + l_rand(opt) % rotations;
+    return tetromino + l_rand(0, rotations, opt);
 }

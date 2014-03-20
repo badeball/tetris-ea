@@ -1,6 +1,8 @@
 #ifndef STRUCTS_H
 #define STRUCTS_H
 
+#include <gsl/gsl_randist.h>
+
 #define N_FEATURES 32
 
 struct genotype {
@@ -91,7 +93,7 @@ struct options {
 
     char* log_directory;
 
-    unsigned int seedp;
+    gsl_rng * rng;
 };
 
 #endif

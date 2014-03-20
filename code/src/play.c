@@ -42,7 +42,6 @@ int main (int argc, char **argv) {
     program_name = argv[0];
 
     struct options opt = {
-        .seedp              = seed(),
         .n_features_enabled = 0,
         .n_weights_enabled  = 0,
         .n_trials           = 10,
@@ -51,6 +50,8 @@ int main (int argc, char **argv) {
         .print_board        = 0,
         .n_piece_lookahead  = 0,
     };
+
+    initalize_rng(&opt);
 
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-h") == 0 ||
