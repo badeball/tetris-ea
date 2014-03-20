@@ -114,10 +114,11 @@ int main (int argc, char **argv) {
             printf("The following phenotype has been initialized.\n");
             write_phenotype(stdout, phenotype, &opt);
 
-            int sum = 0,
-                n_workers,
+            int n_workers,
                 n_trials_scheduled = 0,
                 n_workers_let_down = 0;
+
+            unsigned long long total_cleared_lines = 0;
 
             MPI_Comm_size(MPI_COMM_WORLD, &n_workers);
 
@@ -149,7 +150,7 @@ int main (int argc, char **argv) {
                         &result, 1, MPI_INT, status.MPI_SOURCE, 0, MPI_COMM_WORLD);
                 } else {
                     // A worker is returning a result of a calculation.
-                    sum += request;
+                    total_cleared_lines += request;
                 }
             }
 
@@ -158,12 +159,12 @@ int main (int argc, char **argv) {
             double seconds = (double)(end - begin) / CLOCKS_PER_SEC;
 
             if (opt.n_trials > 1) {
-                printf("The average score of %d trials is %d.\n", opt.n_trials, sum / opt.n_trials);
-                printf("Total cleared lines was %'llu.\n", sum);
+                printf("The average score of %d trials is %d.\n", opt.n_trials, total_cleared_lines / opt.n_trials);
+                printf("Total cleared lines was %'llu.\n", total_cleared_lines);
             }
 
             printf("Execution finished after %.2f seconds.\n", seconds);
-            printf("This amounts to %.2f cleared lines per second.\n", sum / seconds);
+            printf("This amounts to %.2f cleared lines per second.\n", total_cleared_lines / seconds);
         } else {
             while (1) {
                 int request = -1,
