@@ -2,6 +2,7 @@
 #include <limits.h>
 #include <unistd.h>
 #include <string.h>
+#include <math.h>
 
 #include "board.h"
 #include "feature_functions.h"
@@ -85,8 +86,8 @@ float board_score (struct board * new_board, struct board * old_board, struct ph
     return score;
 }
 
-int phenotype_fitness (struct phenotype * phenotype, struct options* opt) {
-    int fitness = 0;
+unsigned long long int phenotype_fitness (struct phenotype * phenotype, struct options* opt) {
+    unsigned long long int fitness = 0;
 
     struct board board = initialize_board(BOARD_WIDTH, BOARD_HEIGHT);
 
@@ -105,7 +106,7 @@ int phenotype_fitness (struct phenotype * phenotype, struct options* opt) {
         }
 
         // Remove lines and add to the current fitness value.
-        fitness += remove_lines(&board, NULL);
+        fitness += pow(remove_lines(&board, NULL), 2);
 
         // Fill the lookahead with a new tetromino.
         for (int i = 0; i < opt->n_piece_lookahead; i++) {
@@ -124,8 +125,8 @@ int phenotype_fitness (struct phenotype * phenotype, struct options* opt) {
     return fitness;
 }
 
-int average_phenotype_fitness (struct phenotype * phenotype, struct options* opt) {
-    float sum = 0;
+unsigned long long int average_phenotype_fitness (struct phenotype * phenotype, struct options* opt) {
+    unsigned long long int sum = 0;
 
     for (int i = 0; i < opt->n_trials; i++) {
         sum += phenotype_fitness(phenotype, opt);
