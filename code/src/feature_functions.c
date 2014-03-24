@@ -449,19 +449,20 @@ float f_hole_depths (struct board * new_board, struct board * old_board, struct 
     int holes_depths = 0;
 
     for (int x = 0; x < new_board->width; x++) {
-        int depth = 1;
+        int depth = 0;
 
         for (int y = 0; y < new_board->height; y++) {
             if (*address_tile(x, y, new_board) == 1) {
-                for (y++; y < new_board->height; y++) {
-                    if (*address_tile(x, y, new_board) == 0) {
-                        holes_depths += depth;
-                    } else {
-                        depth++;
+                depth++;
+            } else {
+                holes_depths += depth;
+
+                for (; y < new_board->height; y++) {
+                    if (*address_tile(x, y, new_board) == 1) {
+                        depth = 1;
+                        break;
                     }
                 }
-
-                break;
             }
         }
     }
