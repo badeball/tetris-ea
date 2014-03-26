@@ -3,6 +3,10 @@
 
 #include "board.h"
 
+#define POSSIBLE_LINES 65536 // 2^16
+
+char full_cells_on_line[POSSIBLE_LINES];
+
 void reset_feature_caches (struct options * opt);
 void initialize_feature_helpers (struct options * opt);
 int feature_exists (char * name);

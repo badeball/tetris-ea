@@ -5,24 +5,33 @@
 #include "board.h"
 #include "feature_functions.h"
 
-struct board * initialize_board (int width, int height) {
-    struct board * board = malloc(sizeof(struct board));
+uint16_t cell_masks[BOARD_WIDTH] = {
+    0x4000, // 0b0100000000000000
+    0x2000, // 0b0010000000000000
+    0x1000, // 0b0001000000000000
+    0x0800, // 0b0000100000000000
+    0x0400, // 0b0000010000000000
+    0x0200, // 0b0000001000000000
+    0x0100, // 0b0000000100000000
+    0x0080, // 0b0000000010000000
+    0x0040, // 0b0000000001000000
+    0x0020, // 0b0000000000100000
+};
 
-    board->width  = width;
-    board->height = height;
-    board->tiles  = calloc(width * height, sizeof(int));
+struct board initialize_board () {
+    struct board board;
+
+    for (int i = 0; i < BOARD_HEIGHT; i++) {
+        board.lines[i] = EMPTY_LINE;
+    }
 
     return board;
 }
 
-struct board * copy_board (struct board * board) {
-    struct board * copy = malloc(sizeof(struct board));
+struct board copy_board (struct board * board) {
+    struct board copy;
 
-    copy->width  = board->width;
-    copy->height = board->height;
-    copy->tiles  = malloc(sizeof(int) * board->width * board->height);
-
-    memcpy(copy->tiles, board->tiles, board->width * board->height * sizeof(int));
+    memcpy(copy.lines, board->lines, BOARD_HEIGHT * sizeof(uint16_t));
 
     return copy;
 }
@@ -32,22 +41,18 @@ int remove_lines (struct board * board, struct t_last_placement * tlp) {
 
     if (tlp != NULL) {
         tlp->n_lines_removed = 0;
-        tlp->lines_removed = malloc(sizeof(int) * board->height);
+        tlp->lines_removed = malloc(sizeof(int) * BOARD_HEIGHT);
     }
 
-    for (int y = 0; y < board->height; y++) {
-        for (int x = 0; x < board->width; x++) {
-            if (*address_tile(x, y, board) == 0) {
-                break;
-            } else if (x == board->width - 1) {
-                if (tlp != NULL) {
-                    tlp->lines_removed[tlp->n_lines_removed++] = y;
-                }
-
-                n_lines_removed++;
-
-                remove_line(board, y);
+    for (int y = 0; y < BOARD_HEIGHT; y++) {
+        if (board->lines[y] == FULL_LINE) {
+            if (tlp != NULL) {
+                tlp->lines_removed[tlp->n_lines_removed++] = y;
             }
+
+            n_lines_removed++;
+
+            remove_line(board, y);
         }
     }
 
@@ -56,36 +61,40 @@ int remove_lines (struct board * board, struct t_last_placement * tlp) {
 
 void remove_line (struct board * board, int line) {
     for (int y = line; y > 0; y--) {
-        for (int x = 0; x < board->width; x++) {
-            *address_tile(x, y, board) = *address_tile(x, y - 1, board);
-        }
+        board->lines[y] = board->lines[y - 1];
     }
 
-    for (int x = 0; x < board->width; x++) {
-        *address_tile(x, 0, board) = 0;
-    }
+    board->lines[0] = EMPTY_LINE;
 }
 
-int * address_tile (int x, int y, struct board * board) {
-    return &(board->tiles[x + y * board->width]);
+int get_tile (int x, int y, struct board * board) {
+    return board->lines[y] & cell_masks[x];
+}
+
+int set_tile (int x, int y, struct board * board, int value) {
+    if (value) {
+        board->lines[y] |= cell_masks[x];
+    } else {
+        board->lines[y] &= ~cell_masks[x];
+    }
 }
 
 void print_board (FILE * stream, struct board * board) {
-    for (int y = 0; y < board->height; y++) {
+    for (int y = 0; y < BOARD_HEIGHT; y++) {
         fprintf(stream, "|");
 
-        for (int x = 0; x < board->width; x++) {
-            if (*address_tile(x, y, board) == 0) {
-                fprintf(stream, " ");
-            } else {
+        for (int x = 0; x < BOARD_WIDTH; x++) {
+            if (board->lines[y] & cell_masks[x]) {
                 fprintf(stream, "#");
+            } else {
+                fprintf(stream, " ");
             }
         }
 
         fprintf(stream, "|\n");
     }
 
-    for (int i = 0; i < board->width + 2; i++) {
+    for (int i = 0; i < BOARD_WIDTH  + 2; i++) {
         fprintf(stream, "-");
     }
 
@@ -93,60 +102,22 @@ void print_board (FILE * stream, struct board * board) {
 }
 
 void free_board (struct board * board) {
-    free(board->tiles);
-    free(board);
+    // NOOP.
 }
 
-int read_board (struct board * board) {
-    int width = 0;
-    int height = 0;
-
-    board->tiles = NULL;
-
+void read_board (struct board * board) {
     size_t len;
     char * line = NULL;
 
-    while (1) {
+    for (int y = 0; y < BOARD_HEIGHT; y++) {
         getline(&line, &len, stdin);
 
-        if (line[0] == '|') {
-            int local_width;
-
-            if (line[strlen(line) - 1] == '\n') {
-                local_width = strlen(line) - 3;
+        for (int x = 0; x < BOARD_WIDTH; x++) {
+            if (line[x + 1] == '#') {
+                set_tile(x, y, board, 1);
             } else {
-                local_width = strlen(line) - 2;
+                set_tile(x, y, board, 0);
             }
-
-            if (width == 0) {
-                width = local_width;
-                board->width = local_width;
-            } else if (width != local_width) {
-                return 1;
-            }
-
-            height++;
-
-            board->tiles = realloc(board->tiles, height * width * sizeof(int));
-
-            for (int i = 0; i < width; i++) {
-                if (line[i + 1] == '#') {
-                    *address_tile(i, height - 1, board) = 1;
-                } else {
-                    *address_tile(i, height - 1, board) = 0;
-                }
-            }
-        } else {
-            break;
         }
     }
-
-    if (width == 0) {
-        return 1;
-    }
-
-    board->width = width;
-    board->height = height;
-
-    return 0;
 }

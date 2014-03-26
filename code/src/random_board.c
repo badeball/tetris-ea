@@ -49,7 +49,7 @@ int main (int argc, char **argv) {
 
     initalize_rng(&opt);
 
-    struct board * board = initialize_board(width, height);
+    struct board board = initialize_board();
 
     for (int i = 0; i < n_pieces; i++) {
         int tetromino_i = random_tetromino(&opt);
@@ -57,13 +57,13 @@ int main (int argc, char **argv) {
         struct tetromino tetromino = tetrominos[tetromino_i];
 
         place_tetromino(
-            board,
+            &board,
             &tetromino,
-            l_rand(0, board->width - 4 + 1 + tetromino.p_left + tetromino.p_right, &opt) - tetromino.p_left,
+            l_rand(0, BOARD_WIDTH - 4 + 1 + tetromino.p_left + tetromino.p_right, &opt) - tetromino.p_left,
             NULL);
     }
 
-    print_board(stdout, board);
+    print_board(stdout, &board);
 
-    free_board(board);
+    free_board(&board);
 }

@@ -45,8 +45,6 @@ int main (int argc, char **argv) {
         .n_features_enabled = 0,
         .n_weights_enabled  = 0,
         .n_trials           = 10,
-        .board_width        = 10,
-        .board_height       = 20,
         .print_board        = 0,
         .n_piece_lookahead  = 0,
     };
@@ -60,10 +58,6 @@ int main (int argc, char **argv) {
             return 0;
         } else if (strcmp(argv[i], "--n-trials") == 0) {
             opt.n_trials = atoi(argv[++i]);
-        } else if (strcmp(argv[i], "--board-width") == 0) {
-            opt.board_width = atoi(argv[++i]);
-        } else if (strcmp(argv[i], "--board-height") == 0) {
-            opt.board_height = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--n-piece-lookahead") == 0) {
             opt.n_piece_lookahead = atoi(argv[++i]);
         } else if (strcmp(argv[i], "-i") == 0) {

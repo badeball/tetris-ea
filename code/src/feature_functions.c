@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #include "board.h"
 #include "feature_functions.h"
@@ -14,11 +15,9 @@ int min (int a, int b) {
 }
 
 float f_max_height (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
-    for (int y = 0; y < new_board->height; y++) {
-        for (int x = 0; x < new_board->width; x++) {
-            if (*address_tile(x, y, new_board) == 1) {
-                return new_board->height - y;
-            }
+    for (int y = 0; y < BOARD_HEIGHT; y++) {
+        if (new_board->lines[y] != EMPTY_LINE) {
+            return BOARD_HEIGHT - y;
         }
     }
 
@@ -28,18 +27,15 @@ float f_max_height (struct board * new_board, struct board * old_board, struct t
 float f_n_holes (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
     int n_holes = 0;
 
-    for (int x = 0; x < new_board->width; x++) {
-        for (int y = 0; y < new_board->height; y++) {
-            if (*address_tile(x, y, new_board) == 1) {
-                for (y++; y < new_board->height; y++) {
-                    if (*address_tile(x, y, new_board) == 0) {
-                        n_holes++;
-                    }
-                }
+    uint16_t row_holes = 0x0000,
+             previous_row = 0x0000;
 
-                break;
-            }
-        }
+    for (int y = 0; y < BOARD_HEIGHT; y++) {
+        row_holes = ~new_board->lines[y] & (previous_row | row_holes);
+
+        n_holes += full_cells_on_line[row_holes];
+
+        previous_row = new_board->lines[y];
     }
 
     return n_holes;
@@ -50,7 +46,7 @@ int current_column = 0;
 float f_column_heights (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
     int height = column_height(new_board, current_column++);
 
-    if (current_column == new_board->width) {
+    if (current_column == BOARD_WIDTH) {
         current_column = 0;
     }
 
@@ -62,7 +58,7 @@ float f_column_difference (struct board * new_board, struct board * old_board, s
 
     current_column++;
 
-    if (current_column == new_board->width - 1) {
+    if (current_column == BOARD_WIDTH - 1) {
         current_column = 0;
     }
 
@@ -70,7 +66,7 @@ float f_column_difference (struct board * new_board, struct board * old_board, s
 }
 
 float f_landing_height (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
-    return new_board->height - tlp->y
+    return BOARD_HEIGHT - tlp->y
         - 4
         + tlp->tetromino->p_bottom
         + (4 - 1 - tlp->tetromino->p_top - tlp->tetromino->p_bottom) / 2.0f;
@@ -79,19 +75,19 @@ float f_landing_height (struct board * new_board, struct board * old_board, stru
 float f_cell_transitions (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
     int transitions = 0;
 
-    for (int x = 0; x < new_board->width; x++) {
-        for (int y = 0; y < new_board->height; y++) {
-            if (*address_tile(x, y, new_board) == 0) {
-                if (x > 0 && *address_tile(x - 1, y, new_board) == 1)
+    for (int x = 0; x < BOARD_WIDTH; x++) {
+        for (int y = 0; y < BOARD_HEIGHT; y++) {
+            if (get_tile(x, y, new_board) == 0) {
+                if (x > 0 && get_tile(x - 1, y, new_board))
                     transitions++;
 
-                if (x < new_board->width - 1 && *address_tile(x + 1, y, new_board) == 1)
+                if (x < BOARD_WIDTH - 1 && get_tile(x + 1, y, new_board))
                     transitions++;
 
-                if (y > 0 && *address_tile(x, y - 1, new_board) == 1)
+                if (y > 0 && get_tile(x, y - 1, new_board))
                     transitions++;
 
-                if (y < new_board->height - 1 && *address_tile(x, y + 1, new_board) == 1)
+                if (y < BOARD_HEIGHT - 1 && get_tile(x, y + 1, new_board))
                     transitions++;
             }
         }
@@ -107,11 +103,11 @@ float f_deep_well_sum (struct board * new_board, struct board * old_board, struc
 
     if (well > 1) well_sum += well;
 
-    well = column_height(new_board, new_board->width - 2) - column_height(new_board, new_board->width - 1);
+    well = column_height(new_board, BOARD_WIDTH - 2) - column_height(new_board, BOARD_WIDTH - 1);
 
     if (well > 1) well_sum += well;
 
-    for (int i = 1; i < new_board->width - 1; i++) {
+    for (int i = 1; i < BOARD_WIDTH - 1; i++) {
         well = min(
                 column_height(new_board, i - 1),
                 column_height(new_board, i + 1)
@@ -126,7 +122,7 @@ float f_deep_well_sum (struct board * new_board, struct board * old_board, struc
 float f_height_differences (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
     int sum_differences = 0;
 
-    for (int i = 0; i < new_board->width - 1; i++) {
+    for (int i = 0; i < BOARD_WIDTH - 1; i++) {
         sum_differences += f_column_difference(new_board, old_board, tlp);
     }
 
@@ -136,11 +132,11 @@ float f_height_differences (struct board * new_board, struct board * old_board, 
 float f_mean_height (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
     int sum = 0;
 
-    for (int i = 0; i < new_board->width; i++) {
+    for (int i = 0; i < BOARD_WIDTH; i++) {
         sum += column_height(new_board, i);
     }
 
-    return (float) sum / (float) new_board->width;
+    return (float) sum / (float) BOARD_WIDTH;
 }
 
 float feature_difference (char * name, struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
@@ -173,12 +169,8 @@ float f_removed_lines (struct board * new_board, struct board * old_board, struc
 float f_weighted_blocks (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
     int weighted_blocks = 0;
 
-    for (int y = 0; y < new_board->height; y++) {
-        for (int x = 0; x < new_board->width; x++) {
-            if (*address_tile(x, y, new_board) == 1) {
-                weighted_blocks += new_board->height - y;
-            }
-        }
+    for (int y = 0; y < BOARD_HEIGHT; y++) {
+        weighted_blocks += full_cells_on_line[new_board->lines[y]] * (BOARD_HEIGHT - y);
     }
 
     return weighted_blocks;
@@ -188,9 +180,9 @@ float f_well_sum (struct board * new_board, struct board * old_board, struct t_l
     int well_sum = 0;
 
     well_sum += max(0, column_height(new_board, 1) - column_height(new_board, 0));
-    well_sum += max(0, column_height(new_board, new_board->width - 2) - column_height(new_board, new_board->width - 1));
+    well_sum += max(0, column_height(new_board, BOARD_WIDTH - 2) - column_height(new_board, BOARD_WIDTH - 1));
 
-    for (int i = 1; i < new_board->width - 1; i++) {
+    for (int i = 1; i < BOARD_WIDTH - 1; i++) {
         well_sum += max(
             0,
             min(
@@ -206,12 +198,8 @@ float f_well_sum (struct board * new_board, struct board * old_board, struct t_l
 float f_n_blocks (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
     int n_blocks = 0;
 
-    for (int y = 0; y < new_board->height; y++) {
-        for (int x = 0; x < new_board->width; x++) {
-            if (*address_tile(x, y, new_board) == 1) {
-                n_blocks++;
-            }
-        }
+    for (int y = 0; y < BOARD_HEIGHT; y++) {
+        n_blocks += full_cells_on_line[new_board->lines[y]];
     }
 
     return n_blocks;
@@ -229,9 +217,7 @@ float f_eroded_piece_cells (struct board * new_board, struct board * old_board, 
 
         if (y >= tlp->y + tlp->tetromino->p_top &&
             y <= tlp->y + 3 - tlp->tetromino->p_bottom) {
-            for (int x = tlp->tetromino->p_left; x < 4 - tlp->tetromino->p_right; x++) {
-                eroded_cells += tlp->tetromino->tiles[y - tlp->y][x];
-            }
+            eroded_cells += full_cells_on_line[tlp->tetromino->lines[y - tlp->y]];
         }
     }
 
@@ -241,19 +227,22 @@ float f_eroded_piece_cells (struct board * new_board, struct board * old_board, 
 float f_row_transitions (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
     int row_transitions = 0;
 
-    for (int y = 0; y < new_board->height; y++) {
-        for (int x = 0; x < new_board->width - 1; x++) {
-            int a = *address_tile(x, y, new_board),
-                b = *address_tile(x + 1, y, new_board);
+    for (int y = 0; y < BOARD_HEIGHT; y++) {
+        uint16_t previous_bit = cell_masks[0], // 0b0100000000000000
+                 row = new_board->lines[y];
 
-            row_transitions += a ^ b;
+        for (int x = 0; x < BOARD_WIDTH; x++) {
+            uint16_t current_bit = row & cell_masks[0];
+
+            if (previous_bit ^ current_bit) {
+                row_transitions++;
+            }
+
+            row = row << 1;
+            previous_bit = current_bit;
         }
 
-        if (*address_tile(0, y, new_board) == 0) {
-            row_transitions++;
-        }
-
-        if (*address_tile(new_board->width - 1, y, new_board) == 0) {
+        if (previous_bit ^ cell_masks[0]) {
             row_transitions++;
         }
     }
@@ -264,22 +253,15 @@ float f_row_transitions (struct board * new_board, struct board * old_board, str
 float f_column_transitions (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
     int column_transitions = 0;
 
-    for (int x = 0; x < new_board->width; x++) {
-        for (int y = 0; y < new_board->height - 1; y++) {
-            int a = *address_tile(x, y, new_board),
-                b = *address_tile(x, y + 1, new_board);
+    uint16_t previous_line = EMPTY_LINE;
 
-            column_transitions += a ^ b;
-        }
+    for (int y = 0; y < BOARD_HEIGHT; y++) {
+        column_transitions += full_cells_on_line[previous_line ^ new_board->lines[y]];
 
-        if (*address_tile(x, 0, new_board) == 1) {
-            column_transitions++;
-        }
-
-        if (*address_tile(x, new_board->height - 1, new_board) == 0) {
-            column_transitions++;
-        }
+        previous_line = new_board->lines[y];
     }
+
+    column_transitions += full_cells_on_line[previous_line ^ FULL_LINE];
 
     return column_transitions;
 }
@@ -287,34 +269,26 @@ float f_column_transitions (struct board * new_board, struct board * old_board, 
 float f_cumulative_wells_dell (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
     int cumulative_well_sum = 0;
 
-    for (int x = 0; x < new_board->width; x++) {
-        for (int y = 0; y < new_board->height; y++) {
-            int left, right;
+    uint16_t well_mask = 0xE000,    // 0b1110000000000000
+             well_pattern = 0xA000; // 0b1010000000000000
 
-            if (x == 0) {
-                left = 1;
-            } else {
-                left = *address_tile(x - 1, y, new_board);
-            }
-
-            if (x == new_board->width - 1) {
-                right = 1;
-            } else {
-                right = *address_tile(x + 1, y, new_board);
-            }
-
-            if (*address_tile(x, y, new_board) == 0 && left == 1 && right == 1) {
+    for (int x = 0; x < BOARD_WIDTH; x++) {
+        for (int y = 0; y < BOARD_HEIGHT; y++) {
+            if ((new_board->lines[y] & well_mask) == well_pattern) {
                 cumulative_well_sum++;
 
-                for (int i = y + 1; i < new_board->height; i++) {
-                    if (*address_tile(x, i, new_board) == 0) {
-                        cumulative_well_sum++;
-                    } else {
+                for (int i = y + 1; i < BOARD_HEIGHT; i++) {
+                    if (new_board->lines[i] & cell_masks[x]) {
                         break;
+                    } else {
+                        cumulative_well_sum++;
                     }
                 }
             }
         }
+
+        well_mask = well_mask >> 1;
+        well_pattern = well_pattern >> 1;
     }
 
     return cumulative_well_sum;
@@ -331,54 +305,45 @@ int series_sum (int n) {
 float f_cumulative_wells_fast (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
     int cumulative_well_sum = 0;
 
-    for (int x = 0; x < new_board->width; x++) {
-        for (int y = 0; y < new_board->height; y++) {
-            int left, right;
+    uint16_t well_mask = 0xE000,    // 0b1110000000000000
+             well_pattern = 0xA000; // 0b1010000000000000
 
-            if (x == 0) {
-                left = 1;
-            } else {
-                left = *address_tile(x - 1, y, new_board);
-            }
+    for (int x = 0; x < BOARD_WIDTH; x++) {
+        for (int y = 0; y < BOARD_HEIGHT; y++) {
+            if ((new_board->lines[y] & well_mask) == well_pattern) {
+                int well_depth = 1;
 
-            if (x == new_board->width - 1) {
-                right = 1;
-            } else {
-                right = *address_tile(x + 1, y, new_board);
-            }
-
-            if (*address_tile(x, y, new_board) == 0 && left == 1 && right == 1) {
-                int depth = 1;
-
-                for (y++; y < new_board->height; y++) {
-                    if (*address_tile(x, y, new_board) == 0) {
-                        depth++;
-                    } else {
+                for (y++; y < BOARD_HEIGHT; y++) {
+                    if (new_board->lines[y] & cell_masks[x]) {
                         break;
+                    } else {
+                        well_depth++;
                     }
                 }
 
-                cumulative_well_sum += series_sum(depth);
+                cumulative_well_sum += series_sum(well_depth);
             }
         }
+
+        well_mask = well_mask >> 1;
+        well_pattern = well_pattern >> 1;
     }
 
     return cumulative_well_sum;
 }
 
 float f_min_height (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
-    int min_height = new_board->height;
+    int min_height = BOARD_HEIGHT,
+        height;
 
-    for (int x = 0; x < new_board->width; x++) {
-        for (int y = 0; y < new_board->height; y++) {
-            if (*address_tile(x, y, new_board) == 1) {
-                if (min_height > new_board->height - y) {
-                    min_height = new_board->height - y;
-                }
+    for (int x = 0; x < BOARD_WIDTH; x++) {
+        height = column_height(new_board, x);
 
+        if (min_height > height) {
+            min_height = height;
+
+            if (min_height == 0) {
                 break;
-            } else if (y == new_board->height - 1) {
-                return 0;
             }
         }
     }
@@ -407,20 +372,17 @@ float f_max_height_difference (struct board * new_board, struct board * old_boar
 }
 
 float f_n_adjacent_holes (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
-    int n_holes = 0,
-        in_hole;
+    int n_holes = 0;
 
-    for (int x = 0; x < new_board->width; x++) {
-        in_hole = 1;
+    uint16_t row_holes = 0x0000,
+             previous_row = 0x0000;
 
-        for (int y = 0; y < new_board->height; y++) {
-            if (*address_tile(x, y, new_board) == 1 && in_hole == 1) {
-                in_hole = 0;
-            } else if (*address_tile(x, y, new_board) == 0 && in_hole == 0) {
-                in_hole = 1;
-                n_holes++;
-            }
-        }
+    for (int y = 0; y < BOARD_HEIGHT; y++) {
+        row_holes = ~new_board->lines[y] & previous_row;
+
+        n_holes += full_cells_on_line[row_holes];
+
+        previous_row = new_board->lines[y];
     }
 
     return n_holes;
@@ -430,9 +392,9 @@ float f_max_well_depth (struct board * new_board, struct board * old_board, stru
     int max_well_depth = 0;
 
     max_well_depth = max(max_well_depth, column_height(new_board, 1) - column_height(new_board, 0));
-    max_well_depth = max(max_well_depth, column_height(new_board, new_board->width - 2) - column_height(new_board, new_board->width - 1));
+    max_well_depth = max(max_well_depth, column_height(new_board, BOARD_WIDTH - 2) - column_height(new_board, BOARD_WIDTH - 1));
 
-    for (int i = 1; i < new_board->width - 1; i++) {
+    for (int i = 1; i < BOARD_WIDTH - 1; i++) {
         max_well_depth = max(
             max_well_depth,
             min(
@@ -446,54 +408,36 @@ float f_max_well_depth (struct board * new_board, struct board * old_board, stru
 }
 
 float f_hole_depths (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
-    int holes_depths = 0;
+    int whole_depths = 0;
 
-    for (int x = 0; x < new_board->width; x++) {
-        int depth = 0;
+    uint16_t covering_cells = 0x0000,
+             previous_row = new_board->lines[BOARD_HEIGHT - 1];
 
-        for (int y = 0; y < new_board->height; y++) {
-            if (*address_tile(x, y, new_board) == 1) {
-                depth++;
-            } else {
-                holes_depths += depth;
+    for (int y = BOARD_HEIGHT - 2; y >= 0; y--) {
+        covering_cells = new_board->lines[y] & (~previous_row | covering_cells);
 
-                for (; y < new_board->height; y++) {
-                    if (*address_tile(x, y, new_board) == 1) {
-                        depth = 1;
-                        break;
-                    }
-                }
-            }
-        }
+        whole_depths += full_cells_on_line[covering_cells];
+
+        previous_row = new_board->lines[y];
     }
 
-    return holes_depths;
+    return whole_depths;
 }
 
 float f_n_rows_with_holes (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
-    int rows_with_holes[new_board->height],
-        n_rows_with_holes = 0;
+    int n_rows_with_holes = 0;
 
-    for (int i = 0; i < new_board->height; i++) {
-        rows_with_holes[i] = 0;
-    }
+    uint16_t row_holes = 0x0000,
+             previous_row = 0x0000;
 
-    for (int x = 0; x < new_board->width; x++) {
-        for (int y = 0; y < new_board->height; y++) {
-            if (*address_tile(x, y, new_board) == 1) {
-                for (y++; y < new_board->height; y++) {
-                    if (*address_tile(x, y, new_board) == 0) {
-                        rows_with_holes[y] = 1;
-                    }
-                }
+    for (int y = 0; y < BOARD_HEIGHT; y++) {
+        row_holes = ~new_board->lines[y] & (previous_row | row_holes);
 
-                break;
-            }
+        if (full_cells_on_line[row_holes]) {
+            n_rows_with_holes++;
         }
-    }
 
-    for (int i = 0; i < new_board->height; i++) {
-        n_rows_with_holes += rows_with_holes[i];
+        previous_row = new_board->lines[y];
     }
 
     return n_rows_with_holes;
@@ -506,7 +450,7 @@ float f_diversity (struct board * new_board, struct board * old_board, struct t_
         diversities[i] = 0;
     }
 
-    for (int i = 0; i < new_board->width - 1; i++) {
+    for (int i = 0; i < BOARD_WIDTH - 1; i++) {
         switch (column_height(new_board, i) - column_height(new_board, i + 1)) {
             case -2:
                 diversities[0] = 1;
