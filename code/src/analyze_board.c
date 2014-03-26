@@ -66,7 +66,7 @@ int main (int argc, char **argv) {
     opt.board_width = board.width;
     opt.board_height = board.height;
 
-    initialize_dynamic_weight_numbers(&opt);
+    initialize_feature_helpers(&opt);
 
     if (p_board) {
         print_board(stdout, &board);

@@ -151,11 +151,13 @@ void reset_feature_caches (struct options * opt) {
     }
 }
 
-void initialize_dynamic_weight_numbers (struct options * opt) {
+void initialize_feature_helpers (struct options * opt) {
     column_heigths = malloc(sizeof(int) * opt->board_width);
 
     features[feature_index("--f-column-heights")].weights = opt->board_width;
     features[feature_index("--f-column-difference")].weights = opt->board_width - 1;
+
+    reset_feature_caches(opt);
 }
 
 int feature_exists (char * name) {

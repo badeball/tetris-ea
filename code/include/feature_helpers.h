@@ -4,7 +4,7 @@
 #include "board.h"
 
 void reset_feature_caches (struct options * opt);
-void initialize_dynamic_weight_numbers (struct options * opt);
+void initialize_feature_helpers (struct options * opt);
 int feature_exists (char * name);
 int feature_index (char * name);
 float call_feature (int feature_i, struct board * new_board, struct board * old_board, struct t_last_placement * tlp);

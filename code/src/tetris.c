@@ -237,7 +237,7 @@ int main (int argc, char **argv) {
         }
     }
 
-    initialize_dynamic_weight_numbers(&opt);
+    initialize_feature_helpers(&opt);
 
     for (int i = 1; i < argc; i++) {
         if (feature_exists(argv[i])) {

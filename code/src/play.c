@@ -76,7 +76,7 @@ int main (int argc, char **argv) {
         }
     }
 
-    initialize_dynamic_weight_numbers(&opt);
+    initialize_feature_helpers(&opt);
 
     struct phenotype * phenotype =
         initialize_phenotype(
