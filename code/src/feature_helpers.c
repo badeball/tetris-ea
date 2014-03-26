@@ -189,9 +189,12 @@ float call_feature (int feature_i, struct board * new_board, struct board * old_
 
 int column_height (struct board * board, int column) {
     if (column_heigths[column] == -1) {
+        column_heigths[column] = 0;
+
         for (int y = 0; y < board->height; y++) {
             if (*address_tile(column, y, board) == 1) {
                 column_heigths[column] = board->height - y;
+                break;
             }
         }
     }
