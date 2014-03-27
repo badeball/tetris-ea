@@ -142,7 +142,7 @@ int features_cached[N_FEATURES];
 float cached_feature_values[N_FEATURES];
 
 void reset_feature_caches (struct options * opt) {
-    for (int i = 0; i < opt->board_width; i++) {
+    for (int i = 0; i < BOARD_WIDTH; i++) {
         column_heigths[i] = -1;
     }
 
@@ -152,10 +152,22 @@ void reset_feature_caches (struct options * opt) {
 }
 
 void initialize_feature_helpers (struct options * opt) {
-    column_heigths = malloc(sizeof(int) * opt->board_width);
+    column_heigths = malloc(sizeof(int) * BOARD_WIDTH);
 
-    features[feature_index("--f-column-heights")].weights = opt->board_width;
-    features[feature_index("--f-column-difference")].weights = opt->board_width - 1;
+    features[feature_index("--f-column-heights")].weights = BOARD_WIDTH;
+    features[feature_index("--f-column-difference")].weights = BOARD_WIDTH - 1;
+
+    for (int i = 0; i < POSSIBLE_LINES; i++) {
+        int n_full_cells = 0;
+
+        for (int x = 0; x < BOARD_WIDTH; x++) {
+            if (i & cell_masks[x]) {
+                n_full_cells++;
+            }
+        }
+
+        full_cells_on_line[i] = n_full_cells;
+    }
 
     reset_feature_caches(opt);
 }
@@ -193,9 +205,9 @@ int column_height (struct board * board, int column) {
     if (column_heigths[column] == -1) {
         column_heigths[column] = 0;
 
-        for (int y = 0; y < board->height; y++) {
-            if (*address_tile(column, y, board) == 1) {
-                column_heigths[column] = board->height - y;
+        for (int y = 0; y < BOARD_HEIGHT; y++) {
+            if (board->lines[y] & cell_masks[column]) {
+                column_heigths[column] = BOARD_HEIGHT - y;
                 break;
             }
         }

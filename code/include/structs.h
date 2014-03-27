@@ -2,8 +2,12 @@
 #define STRUCTS_H
 
 #include <gsl/gsl_randist.h>
+#include <stdint.h>
 
 #define N_FEATURES 32
+
+#define BOARD_WIDTH 10
+#define BOARD_HEIGHT 20
 
 struct genotype {
     float * feature_weights;
@@ -21,9 +25,7 @@ struct population {
 };
 
 struct board {
-    int width;
-    int height;
-    int * tiles;
+    uint16_t lines[BOARD_HEIGHT];
 };
 
 struct tetromino {
@@ -32,7 +34,7 @@ struct tetromino {
     int p_right;
     int p_bottom;
 
-    int tiles[4][4];
+    uint16_t lines[4];
 };
 
 struct tetromino tetrominos[19];
@@ -77,8 +79,6 @@ struct options {
     int no_change_duration;
     int reset_volume;
     int n_trials;
-    int board_width;
-    int board_height;
     int print_board;
     int n_piece_lookahead;
     int randomization_range;

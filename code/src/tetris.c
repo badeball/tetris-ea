@@ -45,8 +45,6 @@ struct options opt = {
     .no_change_duration    = 50,
     .reset_volume          = 0,
     .n_trials              = 10,
-    .board_width           = 10,
-    .board_height          = 20,
     .print_board           = 0,
     .n_piece_lookahead     = 0,
     .randomization_range   = 100,
@@ -101,8 +99,6 @@ void print_help_text () {
         "  --n-trials N (defaults to 10)\n"
         "                      The number of trials to run in order to determine the\n"
         "                      average fitness score of an individual.\n"
-        "  --board-width N (defaults to 10)\n"
-        "  --board-height N (defaults to 20)\n"
         "  --n-piece-lookahead N (defaults to 0)\n"
         "                      The number of tetrominos that the controller will see\n"
         "                      ahead of the current tetromino. Higher means that the\n"
@@ -203,10 +199,6 @@ int main (int argc, char **argv) {
             opt.reset_volume = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--n-trials") == 0) {
             opt.n_trials = atoi(argv[++i]);
-        } else if (strcmp(argv[i], "--board-width") == 0) {
-            opt.board_width = atoi(argv[++i]);
-        } else if (strcmp(argv[i], "--board-height") == 0) {
-            opt.board_height = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--n-piece-lookahead") == 0) {
             opt.n_piece_lookahead = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--randomization-range") == 0) {

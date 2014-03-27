@@ -88,7 +88,7 @@ float board_score (struct board * new_board, struct board * old_board, struct ph
 int phenotype_fitness (struct phenotype * phenotype, struct options* opt) {
     int fitness = 0;
 
-    struct board * board = initialize_board(opt->board_width, opt->board_height);
+    struct board board = initialize_board(BOARD_WIDTH, BOARD_HEIGHT);
 
     int next_tetrominos[opt->n_piece_lookahead + 1];
 
@@ -100,12 +100,12 @@ int phenotype_fitness (struct phenotype * phenotype, struct options* opt) {
 
     while (1) {
         // Place the next tetromino on the board. If the placement was unsuccessful, exit the loop.
-        if (continue_board(board, phenotype, next_tetrominos, opt) == 1) {
+        if (continue_board(&board, phenotype, next_tetrominos, opt) == 1) {
             break;
         }
 
         // Remove lines and add to the current fitness value.
-        fitness += remove_lines(board, NULL);
+        fitness += remove_lines(&board, NULL);
 
         // Fill the lookahead with a new tetromino.
         for (int i = 0; i < opt->n_piece_lookahead; i++) {
@@ -117,7 +117,7 @@ int phenotype_fitness (struct phenotype * phenotype, struct options* opt) {
         N_TETROMINO(&next_tetrominos[opt->n_piece_lookahead], random_t);
 
         if (opt->print_board) {
-            print_board(stdout, board);
+            print_board(stdout, &board);
         }
     }
 
@@ -167,11 +167,11 @@ void _look_ahead(struct future * f, struct board * board, struct phenotype * phe
     for (int rotation_i = 0; rotation_i < n_rotations; rotation_i++) {
         struct tetromino tetromino = tetrominos[next_tetrominos[n_ahead] + rotation_i];
         //printf("p left is %d..\n", tetromino.p_left);
-        n_boards += opt->board_width - 4 + 1 + tetromino.p_left + tetromino.p_right;
+        n_boards += BOARD_WIDTH - 4 + 1 + tetromino.p_left + tetromino.p_right;
     }
 
     // Initialize N boards in order to perform the trials.
-    struct board ** boards = malloc(sizeof(struct board *) * n_boards);
+    struct board * boards = malloc(sizeof(struct board) * n_boards);
 
     for (int i = 0; i < n_boards; i++) {
         boards[i] = copy_board(board);
@@ -185,12 +185,12 @@ void _look_ahead(struct future * f, struct board * board, struct phenotype * phe
     for (int rotation_i = 0; rotation_i < n_rotations; rotation_i++) {
         struct tetromino tetromino = tetrominos[next_tetrominos[n_ahead] + rotation_i];
 
-        int positions = opt->board_width - 4 + 1 + tetromino.p_left + tetromino.p_right;
+        int positions = BOARD_WIDTH - 4 + 1 + tetromino.p_left + tetromino.p_right;
 
         for (int position_i = -tetromino.p_left; position_i < positions - tetromino.p_left; position_i++) {
             int y;
 
-            if (place_tetromino(boards[board_i], &tetromino, position_i, &y) == 0) {
+            if (place_tetromino(&boards[board_i], &tetromino, position_i, &y) == 0) {
                 if (n_ahead == 0) {
                     alt = & (struct alternative) {
                         .position_i = position_i,
@@ -205,17 +205,17 @@ void _look_ahead(struct future * f, struct board * board, struct phenotype * phe
                         .y = y,
                     };
 
-                    remove_lines(boards[board_i], &tlp);
+                    remove_lines(&boards[board_i], &tlp);
 
-                    alt->score = board_score(boards[board_i], board, phenotype, &tlp, opt);
+                    alt->score = board_score(&boards[board_i], board, phenotype, &tlp, opt);
 
                     free(tlp.lines_removed);
 
                     expand_future(f, alt);
                 } else {
-                    remove_lines(boards[board_i], NULL);
+                    remove_lines(&boards[board_i], NULL);
 
-                    _look_ahead(f, boards[board_i], phenotype, n_ahead + 1, alt, next_tetrominos, opt);
+                    _look_ahead(f, &boards[board_i], phenotype, n_ahead + 1, alt, next_tetrominos, opt);
                 }
 
                 board_i++;
@@ -224,7 +224,7 @@ void _look_ahead(struct future * f, struct board * board, struct phenotype * phe
     }
 
     for (int i = 0; i < n_boards; i++) {
-        free_board(boards[i]);
+        free_board(&boards[i]);
     }
 
     free(boards);

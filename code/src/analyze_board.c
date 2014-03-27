@@ -56,15 +56,9 @@ int main (int argc, char **argv) {
         }
     }
 
-    struct board board;
+    struct board board = initialize_board();
 
-    if (read_board(&board) == 1) {
-        printf("Unable to properly read board from standard input.\n");
-        return 1;
-    }
-
-    opt.board_width = board.width;
-    opt.board_height = board.height;
+    read_board(&board);
 
     initialize_feature_helpers(&opt);
 
