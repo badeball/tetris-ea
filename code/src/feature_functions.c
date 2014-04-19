@@ -363,7 +363,7 @@ float f_mean_minus_min_height (struct board * new_board, struct board * old_boar
 
 float f_mean_hole_depth (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
     return call_feature(feature_index("--f-hole-depths"), new_board, old_board, tlp)
-        / call_feature(feature_index("--f-n-holes"), new_board, old_board, tlp);
+        / call_feature(feature_index("--f-n-adjacent-holes"), new_board, old_board, tlp);
 }
 
 float f_max_height_difference (struct board * new_board, struct board * old_board, struct t_last_placement * tlp) {
