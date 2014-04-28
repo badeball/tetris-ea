@@ -51,6 +51,8 @@ int main (int argc, char **argv) {
 
     initalize_rng(&opt);
 
+    initialize_feature_helpers(&opt);
+
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-h") == 0 ||
             strcmp(argv[i], "--help") == 0) {
@@ -70,8 +72,6 @@ int main (int argc, char **argv) {
         }
     }
 
-    initialize_feature_helpers(&opt);
-
     struct phenotype * phenotype =
         initialize_phenotype(
             initialize_genotype(&opt));
@@ -84,11 +84,7 @@ int main (int argc, char **argv) {
 
     for (int i = 1; i < argc; i++) {
         if (feature_exists(argv[i])) {
-            for (int a = 0; a < features[feature_index(argv[i])].weights; a++) {
-                phenotype->genotype->feature_weights[weight_i++] = atof(argv[i + a + 1]);
-            }
-
-            i += features[feature_index(argv[i])].weights;
+            phenotype->genotype->feature_weights[weight_i++] = atof(argv[++i]);
         }
     }
 
