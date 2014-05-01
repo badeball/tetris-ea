@@ -117,16 +117,38 @@ struct genotype* crossover_genotypes (struct genotype* g_1, struct genotype* g_2
     return g;
 }
 
-void mutate_genotype (struct genotype* g, struct options* opt) {
-    for (int i = 0; i < opt->n_weights_enabled; i++) {
-        if (f_rand(opt) > opt->mutation_rate) {
-            g->feature_weights[i] += l_rand(- opt->mutation_range / 2 - 1, opt->mutation_range / 2 + 1, opt);
+int mutate_genotype (struct genotype* g, struct options* opt) {
+    int was_mutated = 0,
+        weight_i = 0,
+        previous_value;
+
+    for (int i = 0; i < opt->n_features_enabled; i++) {
+        for (int a = 0; a < features[opt->enabled_f_indices[i]].weights; a++) {
+            if (f_rand(opt) > opt->mutation_rate) {
+                previous_value = g->feature_weights[weight_i];
+
+                g->feature_weights[weight_i] += l_rand(- opt->mutation_range / 2 - 1, opt->mutation_range / 2 + 1, opt);
+
+                if (g->feature_weights[weight_i] != previous_value && g->feature_enabled[i]) {
+                    was_mutated = 1;
+                }
+            }
+
+            weight_i++;
         }
     }
 
     for (int i = 0; i < opt->n_features_enabled; i++) {
         if (f_rand(opt) > opt->mutation_rate) {
+            previous_value = g->feature_enabled[i];
+
             g->feature_enabled[i] += f_rand(opt) < opt->feature_enable_rate ? 1 : 0;
+
+            if (g->feature_enabled[i] != previous_value) {
+                was_mutated = 1;
+            }
         }
     }
+
+    return was_mutated;
 }

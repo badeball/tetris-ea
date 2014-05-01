@@ -25,6 +25,7 @@ struct phenotype* initialize_phenotype (struct genotype* g) {
     struct phenotype* p = malloc(sizeof(struct phenotype));
 
     p->fitness = 0;
+    p->has_fitness = 0;
     p->genotype = g;
 
     return p;

@@ -345,8 +345,13 @@ int main (int argc, char **argv) {
             int scheduled_individual_per_worker[n_workers];
 
             for (int a = 0; a < opt.population_size - opt.elitism; a++) {
-                scheduled_trials_per_individual[a] = 0;
-                finished_trials_per_individual[a] = 0;
+                if (children->individuals[a]->has_fitness) {
+                    scheduled_trials_per_individual[a] = opt.n_trials;
+                    finished_trials_per_individual[a] = opt.n_trials;
+                } else {
+                    scheduled_trials_per_individual[a] = 0;
+                    finished_trials_per_individual[a] = 0;
+                }
             }
 
             while (!all_trials(finished_trials_per_individual, &opt)) {
@@ -390,6 +395,7 @@ int main (int argc, char **argv) {
                     total_cleared_lines += request;
 
                     if (finished_trials_per_individual[individual] == opt.n_trials) {
+                        children->individuals[individual]->has_fitness = 1;
                         children->individuals[individual]->fitness /= opt.n_trials;
                     }
                 }

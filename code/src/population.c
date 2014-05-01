@@ -72,7 +72,9 @@ struct phenotype* mate_individuals (struct phenotype* phenotype_1, struct phenot
         offspring = copy_phenotype(b_rand(opt) ? phenotype_1 : phenotype_2, opt);
     }
 
-    mutate_genotype(offspring->genotype, opt);
+    if (mutate_genotype(offspring->genotype, opt)) {
+        offspring->has_fitness = 0;
+    }
 
     return offspring;
 }

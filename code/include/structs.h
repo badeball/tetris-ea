@@ -16,6 +16,7 @@ struct genotype {
 
 struct phenotype {
     int fitness;
+    int has_fitness;
     struct genotype* genotype;
 };
 
