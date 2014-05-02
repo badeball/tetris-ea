@@ -142,7 +142,7 @@ int mutate_genotype (struct genotype* g, struct options* opt) {
         if (f_rand(opt) > opt->mutation_rate) {
             previous_value = g->feature_enabled[i];
 
-            g->feature_enabled[i] += f_rand(opt) < opt->feature_enable_rate ? 1 : 0;
+            g->feature_enabled[i] = f_rand(opt) < opt->feature_enable_rate ? 1 : 0;
 
             if (g->feature_enabled[i] != previous_value) {
                 was_mutated = 1;
