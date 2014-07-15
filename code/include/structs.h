@@ -74,8 +74,6 @@ struct options {
     int max_n_generations;
     int crossover_points;
     int elitism;
-    int multi_threading;
-    int n_cores;
     int no_log;
     int no_change_duration;
     int reset_volume;

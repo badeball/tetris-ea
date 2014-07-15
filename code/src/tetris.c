@@ -18,7 +18,6 @@
 #include "random.h"
 #include "selection.h"
 #include "tetromino.h"
-#include "threading.h"
 
 #define PRINT_V(string, ...) if (opt.verbose) { printf(string, ##__VA_ARGS__); }
 
@@ -39,8 +38,6 @@ struct options opt = {
     .max_n_generations     = 100,
     .crossover_points      = 2,
     .elitism               = 0,
-    .multi_threading       = 0,
-    .n_cores               = 0,
     .no_log                = 0,
     .no_change_duration    = 50,
     .reset_volume          = 0,
@@ -115,7 +112,6 @@ void print_help_text () {
         "                      during randomization and mutation. The reason for a\n"
         "                      seemingly low number is that there is quite a lot of\n"
         "                      features.\n"
-        "  --multi-threading   calculate fitness values in parallel by multi-threading\n"
         "  -l or --log-dir     specify the location for run logs\n"
         "  --no-log            do not log results (-i or --no-log needs to be defined)\n"
         "\n"
@@ -209,8 +205,6 @@ int main (int argc, char **argv) {
             opt.feature_enable_rate = atof(argv[++i]);
         } else if (strcmp(argv[i], "--elitism") == 0) {
             opt.elitism = atoi(argv[++i]);
-        } else if (strcmp(argv[i], "--multi-threading") == 0) {
-            opt.multi_threading = 1;
         } else if (strcmp(argv[i], "-l") == 0 ||
             strcmp(argv[i], "--log-dir") == 0) {
             log_directory_defined = 1;
@@ -308,10 +302,6 @@ int main (int argc, char **argv) {
         }
 
         PRINT_V("A random population has been initialized.\n\n");
-
-        if (opt.multi_threading) {
-            set_number_of_cores(&opt);
-        }
 
         signal(SIGINT, sigint_handle);
 
