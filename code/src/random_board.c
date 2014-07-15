@@ -14,9 +14,7 @@ void print_help_text () {
         "usage: %s [options]\n"
         "Options:\n"
         "  -h or --help        show this help message and exit\n"
-        "  -n                  number of random pieces to place (defaults to 10)\n"
-        "  --board-width N (defaults to 10)\n"
-        "  --board-height N (defaults to 20)\n",
+        "  -n                  number of random pieces to place (defaults to 10)\n",
         program_name
     );
 }
@@ -24,9 +22,7 @@ void print_help_text () {
 int main (int argc, char **argv) {
     program_name = argv[0];
 
-    int n_pieces = 10,
-        width = 10,
-        height = 20;
+    int n_pieces = 10;
 
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-h") == 0 ||
@@ -35,10 +31,6 @@ int main (int argc, char **argv) {
             return 0;
         } else if (strcmp(argv[i], "-n") == 0) {
             n_pieces = atoi(argv[++i]);
-        } else if (strcmp(argv[i], "--board-width") == 0) {
-            width = atoi(argv[++i]);
-        } else if (strcmp(argv[i], "--board-height") == 0) {
-            height = atoi(argv[++i]);
         } else {
             printf("Unknown argument '%s'.\n", argv[i]);
             return 1;

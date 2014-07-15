@@ -48,11 +48,10 @@ $ ./random_board
 ------------
 ```
 
-`random_board` also accepts inputs to specify the number of random placements to perform and the
-width and height of the Tetris board.
+`random_board` also accepts inputs to specify the number of random placements to perform.
 
 ```
-$ ./random_board -n 2 --board-width 5 --board-height 10
+$ ./random_board -n 2
 |     |
 |     |
 |     |
@@ -74,60 +73,132 @@ format shown above from standard input.
 ```
 $ ./random_board | ./analyze_board
 These are the values of the given board for the specified features.
---f-max-height             11
---f-n-holes                17
---f-landing-height         18
---f-removed-lines          0
---f-weighted-blocks        181
---f-well-sum               0
---f-n-blocks               40
---f-eroded-piece-cells     0
---f-row-transitions        56
---f-column-transitions     22
---f-cumulative-wells-dell  11
---f-cumulative-wells-fast  13
---f-min-height             2
---f-max-height-difference  9
---f-n-adjacent-holes       6
---f-max-well-depth         0
---f-hole-depths            48
---f-n-rows-with-holes      8
+--f-max-height             10.0
+--f-n-holes                18.0
+--f-column-heights         0.0
+--f-column-heights         8.0
+--f-column-heights         7.0
+--f-column-heights         7.0
+--f-column-heights         8.0
+--f-column-heights         8.0
+--f-column-heights         10.0
+--f-column-heights         6.0
+--f-column-heights         1.0
+--f-column-heights         3.0
+--f-column-difference      8.0
+--f-column-difference      1.0
+--f-column-difference      0.0
+--f-column-difference      1.0
+--f-column-difference      0.0
+--f-column-difference      2.0
+--f-column-difference      4.0
+--f-column-difference      5.0
+--f-column-difference      2.0
+--f-landing-height         17.5
+--f-cell-transitions       62.0
+--f-deep-well-sum          10.0
+--f-height-differences     23.0
+--f-mean-height            5.8
+--f-v-max-height           0.0
+--f-v-n-holes              0.0
+--f-v-height-differences   0.0
+--f-v-mean-height          0.0
+--f-removed-lines          0.0
+--f-weighted-blocks        190.0
+--f-well-sum               10.0
+--f-n-blocks               40.0
+--f-eroded-piece-cells     0.0
+--f-row-transitions        76.0
+--f-column-transitions     28.0
+--f-cumulative-wells-dell  35.0
+--f-cumulative-wells-fast  48.0
+--f-min-height             0.0
+--f-max-minus-mean-height  4.2
+--f-mean-minux-min-height  5.8
+--f-mean-hole-depth        3.1
+--f-max-height-difference  10.0
+--f-n-adjacent-holes       9.0
+--f-max-well-depth         8.0
+--f-hole-depths            28.0
+--f-n-rows-with-holes      7.0
+--f-diversity              4.0
 ```
 
 It also accepts an argument which makes it print out the board it reads from standard input.
 
 ```
-$ ./random_board -n 2 --board-width 5 --board-height 10 | ./analyze_board -p
-|     |
-|     |
-|     |
-|     |
-|     |
-|     |
-|     |
-| #   |
-|#### |
-| ### |
--------
+$ ./random_board -n 2 | ./analyze_board -p
+|          |
+|          |
+|          |
+|          |
+|          |
+|          |
+|          |
+| ##       |
+| ##       |
+|  #  ##   |
+|  ####    |
+|   ##     |
+|   ##     |
+|   #      |
+|  ##      |
+|  ##    ##|
+|   ##  ## |
+|   ##  ## |
+| ###   ## |
+|  # ####  |
+------------
 These are the values of the given board for the specified features.
---f-max-height             3
---f-n-holes                1
---f-landing-height         8
---f-removed-lines          0
---f-weighted-blocks        14
---f-well-sum               3
---f-n-blocks               8
---f-eroded-piece-cells     0
---f-row-transitions        24
---f-column-transitions     7
---f-cumulative-wells-dell  5
---f-cumulative-wells-fast  5
---f-min-height             0
---f-max-height-difference  3
---f-n-adjacent-holes       1
---f-max-well-depth         2
---f-hole-depths            1
---f-n-rows-with-holes      1
+--f-max-height             13.0
+--f-n-holes                42.0
+--f-column-heights         0.0
+--f-column-heights         13.0
+--f-column-heights         13.0
+--f-column-heights         10.0
+--f-column-heights         10.0
+--f-column-heights         11.0
+--f-column-heights         11.0
+--f-column-heights         4.0
+--f-column-heights         5.0
+--f-column-heights         5.0
+--f-column-difference      13.0
+--f-column-difference      0.0
+--f-column-difference      3.0
+--f-column-difference      0.0
+--f-column-difference      1.0
+--f-column-difference      0.0
+--f-column-difference      7.0
+--f-column-difference      1.0
+--f-column-difference      0.0
+--f-landing-height         17.5
+--f-cell-transitions       64.0
+--f-deep-well-sum          13.0
+--f-height-differences     25.0
+--f-mean-height            8.2
+--f-v-max-height           0.0
+--f-v-n-holes              0.0
+--f-v-height-differences   0.0
+--f-v-mean-height          0.0
+--f-removed-lines          0.0
+--f-weighted-blocks        239.0
+--f-well-sum               14.0
+--f-n-blocks               40.0
+--f-eroded-piece-cells     0.0
+--f-row-transitions        76.0
+--f-column-transitions     32.0
+--f-cumulative-wells-dell  37.0
+--f-cumulative-wells-fast  102.0
+--f-min-height             0.0
+--f-max-minus-mean-height  4.8
+--f-mean-minux-min-height  8.2
+--f-mean-hole-depth        2.8
+--f-max-height-difference  13.0
+--f-n-adjacent-holes       11.0
+--f-max-well-depth         13.0
+--f-hole-depths            31.0
+--f-n-rows-with-holes      11.0
+--f-diversity              2.0
 ```
 
 ### Playing a strategy
@@ -139,8 +210,6 @@ $ ./play -h
 usage: ./play [options]
 Options:
   --n-trials N (defaults to 10)
-  --board-width N (defaults to 10)
-  --board-height N (defaults to 20)
   --n-piece-lookahead N (defaults to 0)
                       The number of tetrominos that the controller will see
                       ahead of the current tetromino. Higher means that the
@@ -184,7 +253,7 @@ Options:
 With clever use of a functioning terminal, one can easily test existing strategies as shown below.
 
 ```
-$ ./play --n-trials 3 `cat ./dellacherie-handcrafted`
+$ mpirun -n 2 ./play --n-trials 3 `cat ./dellacherie-handcrafted`
 The following phenotype has been initialized.
 --f-landing-height        -1.00
 --f-eroded-piece-cells     1.00
@@ -248,8 +317,6 @@ Options:
   --n-trials N (defaults to 10)
                       The number of trials to run in order to determine the
                       average fitness score of an individual.
-  --board-width N (defaults to 10)
-  --board-height N (defaults to 20)
   --n-piece-lookahead N (defaults to 0)
                       The number of tetrominos that the controller will see
                       ahead of the current tetromino. Higher means that the
@@ -266,7 +333,6 @@ Options:
                       during randomization and mutation. The reason for a
                       seemingly low number is that there is quite a lot of
                       features.
-  --multi-threading   calculate fitness values in parallel by multi-threading
   -l or --log-dir     specify the location for run logs
   --no-log            do not log results (-i or --no-log needs to be defined)
 
@@ -311,15 +377,15 @@ The following commands shows one way to execute the EA. Note that debugging outp
 copied to a file using `tee`.
 
 ```bash
-unbuffer mpirun -n 5 ./../bin/tetris \
-  --population-size 10               \
-  -l ../../logs                      \
-  -v                                 \
-  --mutation-rate 0.95               \
-  --f-all                            \
-  --elitism 1                        \
-  --max-n-generations 10             \
-  | tee ../../logs/debug.out
+$ unbuffer mpirun -n 5 ./tetris \
+  --population-size 10          \
+  -l ../../logs                 \
+  -v                            \
+  --mutation-rate 0.95          \
+  --f-all                       \
+  --elitism 1                   \
+  --max-n-generations 10        \
+  | tee debug.out
 ```
 
 The results are logged in a line break and tab separated file, where tabs separate individuals of a
@@ -328,7 +394,7 @@ and preparing it to be viewed with gnuplot. The following bash command shows how
 from the project root folder and the results visualized immediately.
 
 ```bash
-$ ./code/bin/tetris -l logs && \
+$ mpirun -n 5 ./code/bin/tetris -l logs && \
     ./logs/format_data && \
     GNUPLOT_LIB="logs/`ls -t logs | head -1`/" \
     gnuplot -p logs/candlesticks
@@ -344,14 +410,14 @@ websockets to push the gatherered data to a web page, which visualizes it using 
 Using this tool requires the reader to install some npm packages.
 
 ```bash
-cd ./logs
-npm install inotify underscore websockets
+$ cd ./logs
+$ npm install inotify underscore websockets
 ```
 
 The following bash command shows how to start `log_monitor`.
 
 ```bash
-./logs/log_monitor
+$ ./logs/log_monitor
 ```
 
 The reader will then have to open `./logs/log_viewer.html` in their browser. Upon running the EA,

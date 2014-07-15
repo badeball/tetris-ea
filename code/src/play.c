@@ -19,8 +19,6 @@ void print_help_text () {
         "usage: %s [options]\n"
         "Options:\n"
         "  --n-trials N (defaults to 10)\n"
-        "  --board-width N (defaults to 10)\n"
-        "  --board-height N (defaults to 20)\n"
         "  --n-piece-lookahead N (defaults to 0)\n"
         "                      The number of tetrominos that the controller will see\n"
         "                      ahead of the current tetromino. Higher means that the\n"
